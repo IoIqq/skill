@@ -1,0 +1,7 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "item"
+	item: "minecraft:diamond"
+	count: 1
+	title: ""
+}

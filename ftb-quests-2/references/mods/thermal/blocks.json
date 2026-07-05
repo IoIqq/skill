@@ -1,0 +1,31 @@
+﻿{
+  "mod_id": "thermal",
+  "mod_name": "Thermal Series",
+  "mc_version": "1.20.1",
+  "count": 45,
+  "blocks": [
+    "thermal:machine_frame", "thermal:machine_furnace",
+    "thermal:machine_pulverizer", "thermal:machine_smelter",
+    "thermal:machine_insolator", "thermal:machine_centrifuge",
+    "thermal:machine_press", "thermal:machine_crucible",
+    "thermal:machine_chiller", "thermal:machine_refinery",
+    "thermal:machine_pyrolyzer", "thermal:machine_bottler",
+    "thermal:machine_brewer", "thermal:machine_crystallizer",
+    "thermal:machine_crafter", "thermal:device_collector",
+    "thermal:device_buffer", "thermal:device_fisher",
+    "thermal:device_mob_container", "thermal:device_tree_extractor",
+    "thermal:device_soil_infuser", "thermal:device_water_gen",
+    "thermal:dynamo_stirling", "thermal:dynamo_compression",
+    "thermal:dynamo_magmatic", "thermal:dynamo_numismatic",
+    "thermal:dynamo_lapidary", "thermal:dynamo_disenchantment",
+    "thermal:dynamo_gourmand", "thermal:energy_cell",
+    "thermal:fluid_cell", "thermal:energy_duct",
+    "thermal:fluid_duct", "thermal:item_buffer",
+    "thermal:charge_bench", "thermal:tinker_bench",
+    "thermal:energy_cell_frame", "thermal:fluid_cell_frame",
+    "thermal:signalum_block", "thermal:lumium_block",
+    "thermal:enderium_block", "thermal:invar_block",
+    "thermal:lead_block", "thermal:nickel_block",
+    "thermal:silver_block", "thermal:tin_block"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "mod_id": "create",
+  "mod_name": "Create",
+  "mc_version": "1.20.1",
+  "count": 12,
+  "entities": [
+    "create:contraption",
+    "create:carriage_contraption",
+    "create:seat",
+    "create:stationary_contraption",
+    "create:gantry_contraption",
+    "create:super_glue",
+    "create:crafting_blueprint",
+    "create:potato_projectile",
+    "create:blueprint_projectile",
+    "create:controlled_contraption_entity",
+    "create:contraption_block_entity",
+    "create:package"
+  ]
+}

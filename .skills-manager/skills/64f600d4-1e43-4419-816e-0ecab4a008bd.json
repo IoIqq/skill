@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "64f600d4-1e43-4419-816e-0ecab4a008bd",
+  "path": "ppt-master-2",
+  "path_key": "ppt-master-2",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

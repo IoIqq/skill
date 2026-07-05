@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "7398dc2f-fc21-4a0f-b037-78a03421f1ed",
+  "path": "gws-calendar",
+  "path_key": "gws-calendar",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

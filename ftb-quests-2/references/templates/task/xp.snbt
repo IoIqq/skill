@@ -1,0 +1,8 @@
+{
+	id: "TASK_ID_HERE"
+	type: "xp"
+	experience: 100
+	levels: false
+	title: ""
+	description: ""
+}

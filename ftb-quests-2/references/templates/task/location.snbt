@@ -1,0 +1,10 @@
+{
+	id: "TASK_ID_HERE"
+	type: "location"
+	pos: [0, 64, 0]
+	dimension: "minecraft:overworld"
+	radius: 5
+	ignore_dim: false
+	title: ""
+	description: ""
+}

@@ -1,0 +1,40 @@
+﻿{
+  "supported": ["1.20.1"],
+  "formats": {
+    "1.12.2": {
+      "format": "JSON",
+      "extension": ".json",
+      "status": "unsupported",
+      "notes": "Completely different format, not supported by this skill"
+    },
+    "1.16.5": {
+      "format": "SNBT",
+      "extension": ".snbt",
+      "status": "unsupported",
+      "notes": "Fewer fields, no quest_links"
+    },
+    "1.18.x": {
+      "format": "SNBT",
+      "extension": ".snbt",
+      "status": "unsupported",
+      "notes": "Introduced quest_links and new reward types"
+    },
+    "1.20.1": {
+      "format": "SNBT",
+      "extension": ".snbt",
+      "status": "supported",
+      "notes": "Full feature set. Description supports multiline arrays. NBT tags fully supported.",
+      "key_differences_from_1_18": [
+        "description field supports text component arrays",
+        "new reward types: toast, advancement",
+        "quest visibility options expanded"
+      ]
+    },
+    "1.21+": {
+      "format": "SNBT",
+      "extension": ".snbt",
+      "status": "planned",
+      "notes": "May have format changes, not yet verified"
+    }
+  }
+}

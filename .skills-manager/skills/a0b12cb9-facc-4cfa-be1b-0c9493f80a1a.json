@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "a0b12cb9-facc-4cfa-be1b-0c9493f80a1a",
+  "path": "newapi-image-generator-2",
+  "path_key": "newapi-image-generator-2",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

@@ -1,0 +1,22 @@
+{
+	id: "QUEST_ID_HERE"
+	x: 0
+	y: 0
+	size: 24
+	shape: "circle"
+	color: "#FFFFFF"
+	title: "Quest Title"
+	subtitle: ""
+	description: [
+		"§7Description text"
+	]
+	icon: "minecraft:diamond"
+	repeatable: false
+	invisible: false
+	tasks: [
+	]
+	rewards: [
+	]
+	dependencies: [
+	]
+}

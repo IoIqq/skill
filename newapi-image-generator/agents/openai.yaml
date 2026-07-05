@@ -1,0 +1,4 @@
+interface:
+  display_name: "Newapi Image Generator"
+  short_description: "Generate and edit images with New API from Node.js"
+  default_prompt: "Use $newapi-image-generator to generate, edit, or vary images with the New API image endpoints."

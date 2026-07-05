@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "4db69e84-76b6-487c-8c00-5723a8a0e5b0",
+  "path": "article-extractor",
+  "path_key": "article-extractor",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

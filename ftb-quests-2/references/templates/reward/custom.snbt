@@ -1,0 +1,6 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "custom"
+	custom_id: "modid:custom_reward_type"
+	title: ""
+}

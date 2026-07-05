@@ -1,0 +1,8 @@
+{
+	id: "TASK_ID_HERE"
+	type: "stat"
+	stat: "minecraft:custom:minecraft:mine_block"
+	value: 100
+	title: ""
+	description: ""
+}

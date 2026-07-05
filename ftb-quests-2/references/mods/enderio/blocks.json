@@ -1,0 +1,32 @@
+﻿{
+  "mod_id": "enderio",
+  "mod_name": "EnderIO",
+  "mc_version": "1.20.1",
+  "count": 55,
+  "blocks": [
+    "enderio:sag_mill", "enderio:alloy_smelter", "enderio:stirling_generator",
+    "enderio:combustion_generator", "enderio:solar_panel",
+    "enderio:enhanced_combustion_generator", "enderio:zombie_generator",
+    "enderio:killer_joe", "enderio:slice_and_splice", "enderio:soul_binder",
+    "enderio:vat", "enderio:painter", "enderio:travel_anchor",
+    "enderio:powered_spawner", "enderio:wired_charger",
+    "enderio:enchanter", "enderio:experience_obelisk",
+    "enderio:item_buffer", "enderio:crafter", "enderio:impulse_hopper",
+    "enderio:fluid_tank", "enderio:pressurized_fluid_tank",
+    "enderio:vacuum_chest", "enderio:xp_vacuum",
+    "enderio:conduit", "enderio:item_conduit", "enderio:fluid_conduit",
+    "enderio:pressurized_fluid_conduit", "enderio:ender_fluid_conduit",
+    "enderio:energy_conduit", "enderio:redstone_conduit",
+    "enderio:conduit_connector", "enderio:external_connection",
+    "enderio:dark_steel_block", "enderio:pulsating_crystal_block",
+    "enderio:vibrant_crystal_block", "enderio:energetic_photovoltaic_module",
+    "enderio:pulsating_photovoltaic_module", "enderio:vibrant_photovoltaic_module",
+    "enderio:basic_capacitor_bank", "enderio:advanced_capacitor_bank",
+    "enderio:vibrant_capacitor_bank", "enderio:void_chassis",
+    "enderio:soul_engine", "enderio:broken_spawner",
+    "enderio:painting_machine", "enderio:slice_and_splice",
+    "enderio:aversion_obelisk", "enderio:inhibitor_obelisk",
+    "enderio:weather_obelisk", "enderio:relocator_obelisk",
+    "enderio:experience_pylon"
+  ]
+}

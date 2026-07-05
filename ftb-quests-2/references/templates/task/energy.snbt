@@ -1,0 +1,8 @@
+{
+	id: "TASK_ID_HERE"
+	type: "energy"
+	energy: 10000
+	unit: "FE"
+	title: ""
+	description: ""
+}

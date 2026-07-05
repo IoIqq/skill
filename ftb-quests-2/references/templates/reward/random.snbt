@@ -1,0 +1,19 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "random"
+	random: [
+		{
+			type: "item"
+			item: "minecraft:diamond"
+			count: 1
+			weight: 50
+		}
+		{
+			type: "item"
+			item: "minecraft:emerald"
+			count: 1
+			weight: 50
+		}
+	]
+	title: "Random Reward"
+}

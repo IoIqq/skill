@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "297f8e6f-0b02-467d-a8cc-4971618d1b41",
+  "path": "image-enhancer",
+  "path_key": "image-enhancer",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

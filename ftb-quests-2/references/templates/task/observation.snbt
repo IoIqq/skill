@@ -1,0 +1,7 @@
+{
+	id: "TASK_ID_HERE"
+	type: "observation"
+	observation: "minecraft:entity"
+	title: ""
+	description: ""
+}

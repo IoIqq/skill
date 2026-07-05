@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "32fe78d6-c006-4980-9c4c-ddb5380725b4",
+  "path": "imagegen-frontend-mobile",
+  "path_key": "imagegen-frontend-mobile",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

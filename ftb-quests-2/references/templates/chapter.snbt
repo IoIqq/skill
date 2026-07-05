@@ -1,0 +1,41 @@
+{
+	id: "CHAPTER_ID_HERE"
+	title: "Chapter Title"
+	subtitle: "Chapter Subtitle"
+	icon: "minecraft:book"
+	sorting: 0
+	default_width: 500
+	default_height: 400
+	default_always_invisible: false
+	groups: [
+		{
+			id: "GROUP_ID_HERE"
+			title: "Group Name"
+			color: "#8B4513"
+		}
+	]
+	quests: [
+		{
+			id: "QUEST_ID_HERE"
+			x: 0
+			y: 0
+			size: 24
+			shape: "circle"
+			color: "#FFFFFF"
+			title: "Quest Title"
+			description: [
+				"§7Quest description line 1"
+				"§7Quest description line 2"
+			]
+			icon: "minecraft:diamond"
+			tasks: [
+			]
+			rewards: [
+			]
+			dependencies: [
+			]
+		}
+	]
+	quest_links: [
+	]
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "65f591e9-6678-42dd-95e8-e75a9c864bed",
+  "path": "comfyui-skill-openclaw-2",
+  "path_key": "comfyui-skill-openclaw-2",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

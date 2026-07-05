@@ -1,0 +1,26 @@
+{
+  "108": {
+    "inputs": {
+      "video": [
+        "129",
+        0
+      ],
+      "filename_prefix": "video/Wan2.2_i2v",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "class_type": "SaveVideo",
+    "_meta": {
+      "title": "SaveVideo"
+    }
+  },
+  "97": {
+    "inputs": {
+      "image": "赤尾“薄”产品展示分镜，商业广告风格，极简高级的电商视觉，单.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "LoadImage"
+    }
+  }
+}

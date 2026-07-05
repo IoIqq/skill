@@ -1,0 +1,42 @@
+{
+  pack: "stable-test-pack",
+  format: "json5",
+  default_locale: "en_us",
+  locales: ["en_us"],
+  data: { default_reward_team: false, default_consume_items: true },
+  chapters: [
+    {
+      name: "intro",
+      group: "",
+      order_index: 0,
+      default_quest_shape: "circle",
+      layout: { mode: "auto" },
+      quests: [
+        {
+          name: "punch_wood",
+          depends_on: [],
+          tasks: [
+            { name: "logs", type: "ftbquests:item",
+              item: "minecraft:oak_log", count: 4, consume_items: true },
+          ],
+          rewards: [
+            { name: "apple", type: "ftbquests:item",
+              item: { id: "minecraft:apple", count: 2 } },
+          ],
+        },
+        {
+          name: "make_bench",
+          depends_on: ["punch_wood"],
+          tasks: [
+            { name: "bench", type: "ftbquests:item",
+              item: "minecraft:crafting_table" },
+          ],
+          rewards: [
+            { name: "pick", type: "ftbquests:item",
+              item: "minecraft:wooden_pickaxe" },
+          ],
+        },
+      ],
+    },
+  ],
+}

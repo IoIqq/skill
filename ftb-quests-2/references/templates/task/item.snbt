@@ -1,0 +1,11 @@
+{
+	id: "TASK_ID_HERE"
+	type: "item"
+	item: "minecraft:diamond"
+	count: 64
+	consume_items: true
+	ignore_damage: false
+	ignore_nbt: false
+	title: ""
+	description: ""
+}

@@ -1,0 +1,8 @@
+{
+	id: "TASK_ID_HERE"
+	type: "kill"
+	entity: "minecraft:zombie"
+	count: 10
+	title: ""
+	description: ""
+}

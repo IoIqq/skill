@@ -1,0 +1,7 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "toast"
+	text: "§aCongratulations!"
+	icon: "minecraft:golden_apple"
+	title: ""
+}

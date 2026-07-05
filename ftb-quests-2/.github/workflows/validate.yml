@@ -1,0 +1,29 @@
+﻿name: Validate Quest Config
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Validate quest config examples
+      run: |
+        python scripts/validate_quests.py examples/modern/
+        python scripts/validate_quests.py examples/legacy/
+    
+    - name: Check JSON5 syntax
+      run: |
+        pip install pyjson5
+        find . -name '*.json5' -exec python -c 'import json5; json5.load(open("{}"))' \;

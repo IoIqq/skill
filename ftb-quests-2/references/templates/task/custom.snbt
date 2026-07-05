@@ -1,0 +1,7 @@
+{
+	id: "TASK_ID_HERE"
+	type: "custom"
+	custom_id: "modid:custom_task_type"
+	title: ""
+	description: ""
+}

@@ -1,0 +1,98 @@
+﻿{
+  "version": "2026-06-19",
+  "mc_version": "1.20.1",
+  "total_mods": 9,
+  "mods": {
+    "create": {
+      "name": "Create",
+      "mc_version": "1.20.1",
+      "addons": ["steampn_rails", "createaddition"],
+      "categories": {
+        "blocks": { "file": "create/blocks.json", "count": 87 },
+        "items": { "file": "create/items.json", "count": 156 },
+        "fluids": { "file": "create/fluids.json", "count": 4 },
+        "entities": { "file": "create/entities.json", "count": 12 },
+        "machines": { "file": "create/machines.json", "count": 31 }
+      }
+    },
+    "steampn_rails": {
+      "name": "Create: Steam 'n' Rails",
+      "mc_version": "1.20.1",
+      "addons": [],
+      "parent": "create",
+      "categories": {
+        "blocks": { "file": "steampn_rails/blocks.json", "count": 25 },
+        "items": { "file": "steampn_rails/items.json", "count": 18 }
+      }
+    },
+    "createaddition": {
+      "name": "Create Crafts & Additions",
+      "mc_version": "1.20.1",
+      "addons": [],
+      "parent": "create",
+      "categories": {
+        "blocks": { "file": "createaddition/blocks.json", "count": 15 },
+        "items": { "file": "createaddition/items.json", "count": 30 }
+      }
+    },
+    "mekanism": {
+      "name": "Mekanism",
+      "mc_version": "1.20.1",
+      "addons": ["mekanismgenerators", "mekanismadditions", "mekanismtools"],
+      "categories": {
+        "blocks": { "file": "mekanism/blocks.json", "count": 62 },
+        "items": { "file": "mekanism/items.json", "count": 203 },
+        "gases": { "file": "mekanism/gases.json", "count": 18 }
+      }
+    },
+    "thermal": {
+      "name": "Thermal Series",
+      "mc_version": "1.20.1",
+      "addons": ["thermalexpansion", "thermalfoundation", "thermaldynamics"],
+      "categories": {
+        "blocks": { "file": "thermal/blocks.json", "count": 45 },
+        "items": { "file": "thermal/items.json", "count": 120 },
+        "fluids": { "file": "thermal/fluids.json", "count": 8 }
+      }
+    },
+    "enderio": {
+      "name": "EnderIO",
+      "mc_version": "1.20.1",
+      "addons": [],
+      "categories": {
+        "blocks": { "file": "enderio/blocks.json", "count": 55 },
+        "items": { "file": "enderio/items.json", "count": 95 },
+        "fluids": { "file": "enderio/fluids.json", "count": 6 }
+      }
+    },
+    "ae2": {
+      "name": "Applied Energistics 2",
+      "mc_version": "1.20.1",
+      "addons": [],
+      "categories": {
+        "blocks": { "file": "ae2/blocks.json", "count": 70 },
+        "items": { "file": "ae2/items.json", "count": 85 }
+      }
+    },
+    "botania": {
+      "name": "Botania",
+      "mc_version": "1.20.1",
+      "addons": [],
+      "categories": {
+        "blocks": { "file": "botania/blocks.json", "count": 90 },
+        "items": { "file": "botania/items.json", "count": 130 },
+        "entities": { "file": "botania/entities.json", "count": 8 }
+      }
+    },
+    "immersiveengineering": {
+      "name": "Immersive Engineering",
+      "mc_version": "1.20.1",
+      "addons": [],
+      "categories": {
+        "blocks": { "file": "immersiveengineering/blocks.json", "count": 80 },
+        "items": { "file": "immersiveengineering/items.json", "count": 110 },
+        "fluids": { "file": "immersiveengineering/fluids.json", "count": 5 }
+      }
+    }
+  }
+}

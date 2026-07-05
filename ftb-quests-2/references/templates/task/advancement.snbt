@@ -1,0 +1,7 @@
+{
+	id: "TASK_ID_HERE"
+	type: "advancement"
+	advancement: "minecraft:story/mine_stone"
+	title: ""
+	description: ""
+}

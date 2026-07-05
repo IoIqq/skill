@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "b795aeca-6991-4cbc-9225-769b73e5858a",
+  "path": "ftb-quests",
+  "path_key": "ftb-quests",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

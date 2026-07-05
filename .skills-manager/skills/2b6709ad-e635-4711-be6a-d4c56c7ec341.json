@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "2b6709ad-e635-4711-be6a-d4c56c7ec341",
+  "path": "codegraph-context-2",
+  "path_key": "codegraph-context-2",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

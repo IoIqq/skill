@@ -1,0 +1,6 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "loot"
+	loot_table: "minecraft:chests/simple_dungeon"
+	title: ""
+}

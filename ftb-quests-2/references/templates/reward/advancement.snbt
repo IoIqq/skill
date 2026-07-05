@@ -1,0 +1,6 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "advancement"
+	advancement: "minecraft:story/enter_the_nether"
+	title: ""
+}

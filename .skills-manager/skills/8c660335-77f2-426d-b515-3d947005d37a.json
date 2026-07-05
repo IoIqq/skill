@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "8c660335-77f2-426d-b515-3d947005d37a",
+  "path": "openweb",
+  "path_key": "openweb",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

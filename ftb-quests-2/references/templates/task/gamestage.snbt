@@ -1,0 +1,7 @@
+{
+	id: "TASK_ID_HERE"
+	type: "gamestage"
+	stage: "stage_name"
+	title: ""
+	description: ""
+}

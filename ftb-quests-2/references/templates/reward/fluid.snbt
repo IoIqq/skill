@@ -1,0 +1,7 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "fluid"
+	fluid: "minecraft:water"
+	amount: 1000
+	title: ""
+}

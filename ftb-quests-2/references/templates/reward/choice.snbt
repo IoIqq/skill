@@ -1,0 +1,17 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "choice"
+	choices: [
+		{
+			type: "item"
+			item: "minecraft:diamond"
+			count: 5
+		}
+		{
+			type: "item"
+			item: "minecraft:emerald"
+			count: 10
+		}
+	]
+	title: "Choose One"
+}

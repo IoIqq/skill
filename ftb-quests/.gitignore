@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.orig
+
+# Backups
+*.bak
+*~
+
+# FTB Quests runtime artifacts (live in a modpack, not the skill repo)
+.ftbq-cache/
+.ftbq-backup/
+
+# Test scratch dirs
+_audit_diff_*
+_audit_tmp*
+
+# CodeGraph index (if the toolchain is used)
+.codegraph/
+
+# Claude Code dev artifacts
+.claude/

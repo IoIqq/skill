@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "72f4bf71-adfd-4ab1-88d2-b664b1131410",
+  "path": "video-spec-builder",
+  "path_key": "video-spec-builder",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "import",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

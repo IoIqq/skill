@@ -1,0 +1,7 @@
+{
+	id: "REWARD_ID_HERE"
+	type: "command"
+	command: "give @s minecraft:diamond 5"
+	silent: false
+	title: ""
+}
