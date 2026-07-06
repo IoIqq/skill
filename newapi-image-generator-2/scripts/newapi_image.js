@@ -4,16 +4,16 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 
-const DEFAULT_BASE_URL = 'https://api.xstx.info';
+const DEFAULT_BASE_URL = 'https://nowcoding.ai/v1';
 const DEFAULT_GENERATE_MODEL = 'gpt-image-1';
 const DEFAULT_EDIT_MODEL = 'gpt-image-1';
 const DEFAULT_VARIATION_MODEL = 'dall-e-2';
-const DEFAULT_RESPONSE_FORMAT = 'url';
+const DEFAULT_RESPONSE_FORMAT = 'b64_json';
 
 function usage() {
   console.log(`Usage:
   node scripts/newapi_image.js generate --prompt "..." [options]
-  node scripts/newapi_image.js edit --image input.png [--mask mask.png] --prompt "..." [options]
+  node scripts/newapi_image.js edit --image input.png [--image ref2.png ...] [--mask mask.png] --prompt "..." [options]
   node scripts/newapi_image.js variation --image input.png [options]
 
 Options:
@@ -98,9 +98,9 @@ function resolveModel(action, args) {
   return DEFAULT_GENERATE_MODEL;
 }
 
-function toFormField(value) {
-  if (value === undefined || value === null) return undefined;
-  return String(value);
+async function fileToDataUrl(filePath) {
+  const bytes = await fs.readFile(filePath);
+  return `data:application/octet-stream;base64,${Buffer.from(bytes).toString('base64')}`;
 }
 
 async function fileToBlob(filePath) {
@@ -108,42 +108,75 @@ async function fileToBlob(filePath) {
   return new Blob([bytes], { type: 'application/octet-stream' });
 }
 
-async function buildFormData(action, args) {
-  const form = new FormData();
-  form.set('model', toFormField(resolveModel(action, args)));
+async function buildJsonBody(action, args) {
+  const body = {
+    model: resolveModel(action, args),
+    response_format: args.responseFormat || args['response-format'] || DEFAULT_RESPONSE_FORMAT,
+  };
 
   if (args.prompt) {
-    form.set('prompt', args.prompt);
+    body.prompt = args.prompt;
   }
   if (args.size) {
-    form.set('size', args.size);
+    body.size = args.size;
   }
   if (args.n !== undefined) {
-    form.set('n', String(args.n));
+    body.n = Number(args.n);
   }
-  if (args.responseFormat || args['response-format']) {
-    form.set('response_format', args.responseFormat || args['response-format']);
-  } else {
-    form.set('response_format', DEFAULT_RESPONSE_FORMAT);
+  if (args.user) {
+    body.user = args.user;
   }
+  if (args.thinking) {
+    body.thinking = args.thinking;
+  }
+
+  if (action === 'edit' || action === 'variation') {
+    const images = args.image || [];
+    if (action === 'variation' && images.length !== 1) {
+      throw new Error(`Expected exactly one --image for ${action}`);
+    }
+    if (action === 'edit' && images.length < 1) {
+      throw new Error(`Expected at least one --image for ${action}`);
+    }
+    body.image = action === 'edit'
+      ? await Promise.all(images.map(async (imagePath) => fileToDataUrl(path.resolve(imagePath))))
+      : await fileToDataUrl(path.resolve(images[0]));
+  }
+
+  if (action === 'edit' && args.mask) {
+    body.mask = await fileToDataUrl(path.resolve(args.mask));
+  }
+
+  return body;
+}
+
+async function buildEditFormData(args) {
+  const form = new FormData();
+  form.set('model', resolveModel('edit', args));
+  form.set('prompt', ensureRequired(args.prompt, '--prompt'));
+  form.set('size', args.size || '1024x1536');
+  form.set('n', String(args.n !== undefined ? args.n : 1));
+  form.set('response_format', args.responseFormat || args['response-format'] || DEFAULT_RESPONSE_FORMAT);
+
   if (args.user) {
     form.set('user', args.user);
   }
-
-  if (action === 'generate') {
-    return form;
+  if (args.thinking) {
+    form.set('thinking', args.thinking);
   }
 
   const images = args.image || [];
-  if (images.length !== 1) {
-    throw new Error(`Expected exactly one --image for ${action}`);
+  if (images.length < 1) {
+    throw new Error('Expected at least one --image for edit');
   }
 
-  const absolute = path.resolve(images[0]);
-  const blob = await fileToBlob(absolute);
-  form.append('image', blob, path.basename(absolute));
+  for (const imagePath of images) {
+    const absolute = path.resolve(imagePath);
+    const blob = await fileToBlob(absolute);
+    form.append('image', blob, path.basename(absolute));
+  }
 
-  if (action === 'edit' && args.mask) {
+  if (args.mask) {
     const absoluteMask = path.resolve(args.mask);
     const maskBlob = await fileToBlob(absoluteMask);
     form.append('mask', maskBlob, path.basename(absoluteMask));
@@ -152,7 +185,38 @@ async function buildFormData(action, args) {
   return form;
 }
 
-async function fetchImagePayload(baseUrl, apiKey, endpoint, form) {
+async function fetchJsonImagePayload(baseUrl, apiKey, endpoint, body) {
+  const response = await fetch(`${baseUrl}${endpoint}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  const contentType = response.headers.get('content-type') || '';
+  const text = await response.text();
+  let payload;
+  if (contentType.includes('application/json')) {
+    payload = JSON.parse(text);
+  } else {
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = { raw: text };
+    }
+  }
+
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || text || response.statusText;
+    throw new Error(`Request failed (${response.status}): ${message}`);
+  }
+
+  return payload;
+}
+
+async function fetchMultipartImagePayload(baseUrl, apiKey, endpoint, form) {
   const response = await fetch(`${baseUrl}${endpoint}`, {
     method: 'POST',
     headers: {
@@ -259,8 +323,11 @@ async function main() {
   const apiKey = ensureRequired(args.apiKey || args['api-key'] || process.env.NEWAPI_API_KEY, 'NEWAPI_API_KEY');
 
   if (action !== 'generate') {
-    if ((args.image || []).length !== 1) {
+    if (action === 'variation' && (args.image || []).length !== 1) {
       throw new Error(`Expected exactly one --image for ${action}`);
+    }
+    if (action === 'edit' && (args.image || []).length < 1) {
+      throw new Error(`Expected at least one --image for ${action}`);
     }
   }
 
@@ -270,14 +337,15 @@ async function main() {
     ensureRequired(args.prompt, '--prompt');
   }
 
-  const form = await buildFormData(action, args);
   const endpoint = action === 'generate'
-    ? '/v1/images/generations'
+    ? '/images/generations'
     : action === 'edit'
-      ? '/v1/images/edits'
-      : '/v1/images/variations';
+      ? '/images/edits'
+      : '/images/variations';
 
-  const payload = await fetchImagePayload(baseUrl, apiKey, endpoint, form);
+  const payload = action === 'edit'
+    ? await fetchMultipartImagePayload(baseUrl, apiKey, endpoint, await buildEditFormData(args))
+    : await fetchJsonImagePayload(baseUrl, apiKey, endpoint, await buildJsonBody(action, args));
   const result = await saveResponse(payload, args);
 
   console.log(JSON.stringify({

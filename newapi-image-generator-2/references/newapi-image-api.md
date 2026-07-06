@@ -4,7 +4,7 @@ This skill assumes an OpenAI-compatible image API behind `NEWAPI_BASE_URL`.
 
 ## Environment
 
-- `NEWAPI_BASE_URL`: Base URL for the gateway, default `https://api.xstx.info`
+- `NEWAPI_BASE_URL`: Base URL for the gateway, default `https://nowcoding.ai/v1`
 - `NEWAPI_API_KEY`: Bearer token for authorization
 
 ## Endpoints

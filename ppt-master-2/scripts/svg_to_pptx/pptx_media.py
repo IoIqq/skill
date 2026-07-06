@@ -8,9 +8,8 @@ import tempfile
 from pathlib import Path
 
 # SVG to PNG library detection
-# Prefer CairoSVG (better quality), fall back to svglib, then browser capture.
+# Prefer CairoSVG (better quality), fall back to svglib
 PNG_RENDERER: str | None = None
-PLAYWRIGHT_OK = False
 
 try:
     import cairosvg
@@ -21,14 +20,6 @@ except (ImportError, OSError):
         from reportlab.graphics import renderPM
         PNG_RENDERER = 'svglib'
     except (ImportError, OSError):
-        pass
-
-if PNG_RENDERER is None:
-    try:
-        from playwright.sync_api import sync_playwright  # type: ignore
-        PLAYWRIGHT_OK = True
-        PNG_RENDERER = 'playwright'
-    except Exception:
         pass
 
 
@@ -43,8 +34,6 @@ def get_png_renderer_info() -> tuple[str | None, str, str | None]:
     elif PNG_RENDERER == 'svglib':
         return ('svglib', '(some gradients may be lost)',
                 'Install cairosvg for better results: pip install cairosvg')
-    elif PNG_RENDERER == 'playwright':
-        return ('playwright', '(browser screenshot fallback)', None)
     else:
         return (None, '(not installed)',
                 'Install via: pip install cairosvg or pip install svglib reportlab')
@@ -92,29 +81,6 @@ def convert_svg_to_png(
                 configPIL={'quality': 95},
             )
             return True
-
-        elif PNG_RENDERER == 'playwright' and PLAYWRIGHT_OK:
-            from playwright.sync_api import sync_playwright  # type: ignore
-
-            svg = svg_path.read_text(encoding='utf-8', errors='ignore')
-            page_html = (
-                "<!doctype html><html><head><meta charset='utf-8'>"
-                "<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:white;}"
-                "svg{display:block;width:100%;height:100%;}"
-                "</style></head><body>"
-                f"{svg}"
-                "</body></html>"
-            )
-            with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True, channel='msedge')
-                page = browser.new_page(
-                    viewport={'width': width or 1280, 'height': height or 720},
-                    device_scale_factor=1,
-                )
-                page.set_content(page_html, wait_until='load')
-                page.screenshot(path=str(png_path), full_page=True)
-                browser.close()
-            return png_path.is_file()
 
     except Exception as e:
         print(f"  Warning: SVG to PNG conversion failed ({svg_path.name}): {e}")

@@ -421,7 +421,7 @@ def create_pptx_with_native_svg(
         media_dir.mkdir(exist_ok=True)
 
         prerender_results: dict[int, bool] | None = None
-        if not use_native_shapes and PNG_RENDERER is not None:
+        if not use_native_shapes and use_compat_mode and PNG_RENDERER is not None:
             if workers is None:
                 resolved_workers = min(os.cpu_count() or 2, len(svg_files), 8)
             else:
@@ -439,7 +439,6 @@ def create_pptx_with_native_svg(
 
         success_count = 0
         has_any_image = False
-        svg_media_used = False
         media_cache: dict[tuple[str, str], str] = {}
         image_exts_used: set[str] = set()
         notes_slides_created: set[int] = set()
@@ -593,10 +592,10 @@ def create_pptx_with_native_svg(
                     png_rid = 'rId2'
                     svg_rid = 'rId3' if use_compat_mode else 'rId2'
 
+                    shutil.copy(svg_path, media_dir / svg_filename)
+
                     slide_has_png = False
                     if use_compat_mode:
-                        shutil.copy(svg_path, media_dir / svg_filename)
-                        svg_media_used = True
                         if prerender_results is not None:
                             png_success = prerender_results.get(i, False)
                         else:
@@ -613,24 +612,6 @@ def create_pptx_with_native_svg(
                             if verbose:
                                 print(f"  [{i}/{len(svg_files)}] {svg_path.name} - PNG generation failed, using pure SVG")
                             svg_rid = 'rId2'
-                    else:
-                        if prerender_results is not None:
-                            png_success = prerender_results.get(i, False)
-                        else:
-                            png_path = media_dir / png_filename
-                            png_success = convert_svg_to_png(
-                                svg_path, png_path,
-                                width=pixel_width, height=pixel_height,
-                            )
-                        if png_success:
-                            slide_has_png = True
-                            has_any_image = True
-                            image_exts_used.add('png')
-                            svg_filename = png_filename
-                            svg_rid = png_rid
-                        else:
-                            shutil.copy(svg_path, media_dir / svg_filename)
-                            svg_media_used = True
 
                     slide_xml_path = extract_dir / 'ppt' / 'slides' / f'slide{slide_num}.xml'
                     slide_xml = create_slide_xml_with_svg(
@@ -772,7 +753,7 @@ def create_pptx_with_native_svg(
             content_types = f.read()
 
         types_to_add: list[str] = []
-        if not use_native_shapes and svg_media_used:
+        if not use_native_shapes:
             if 'Extension="svg"' not in content_types:
                 types_to_add.append('  <Default Extension="svg" ContentType="image/svg+xml"/>')
         for ext in sorted(image_exts_used):
