@@ -8,6 +8,7 @@ Strategic input to the interview and authoring loop. **Load the section you need
 - **For cross-mod quest design** → `§synergy-patterns`.
 - **For empirical grounding / "what do shipped packs actually do?"** → `§field-findings`.
 - **For genre-specific patterns** (expert gating, skyblock, magic, RPG, Create) → `§pack-type-patterns`.
+- **For quest-level micro-patterns** (task combos, dependency topologies, reward bridges, stage markers) → modular reference files (see `module-index.md` for routing).
 
 The capstone model referenced throughout is **in-chapter + item-task-gated** (see `§principles` F1/F2) — stated once there, not re-explained at every mention below.
 

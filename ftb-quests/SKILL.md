@@ -43,6 +43,8 @@ Quest text is what the player actually reads. The field/ID machinery elsewhere i
 
 **Length budget.** Title ≤ 4 words. Subtitle = 1 line. Description ~2–4 sentences for a normal quest (system-teaching quests may run 2–3 short paragraphs); past ~5 sentences you're padding — move the excess into a linked "how this works" quest or chapter subtitle.
 
+**AI-specific style risks.** When generating many quests in sequence, watch for style homogenization (AP10) and narrative inconsistency (AP11) — both are documented in `reference/design/mod-description-trust.md §AP9–AP11`. Step 4's self-check step catches these per-node; vary description mode (how-to / lore / tip / challenge) and reward structure across the chapter.
+
 
 ---
 
@@ -96,11 +98,30 @@ Set `format: "json5"` (default) or `format: "snbt"` in the spec; default is `jso
 
 ---
 
-## Verify, don't fabricate (禁止脑补)
+## ⛔ ABSOLUTE RULE — 严禁脑补（ZERO HALLUCINATION）
 
-FTB Quests silently fails on invented facts — a fabricated item id passes the static validator but the registry rejects it at load; a wrong recipe makes the quest uncompletable; a fake cross-mod interaction tasks the player for something no mod does. **Never invent an id, recipe, mechanic, or interaction.** Verify against a real source, and if you can't verify, ask the user or flag it `[unverified]` for the Step 5a load-test to catch.
+**This is a non-negotiable, hard-stop rule. Violation invalidates the entire output.**
 
-**The verification ladder (strongest source first):**
+**You MUST NOT invent, guess, assume, or hallucinate ANY of the following:**
+
+| Category | Forbidden examples | What to do instead |
+|---|---|---|
+| **物品 ID** | "应该是 `create:brass_ingot` 吧" / guessing a mod's namespace | 查 `items.json5` `all_item_ids` 或 `lookup_item.py`；查不到就问用户 |
+| **物品配方 / 合成路线** | "用铁锭和木板合成" / inventing a crafting recipe | 问用户在 JEI/EMI 确认；或标记 `[unverified:recipe]` |
+| **任务内容 / task 设计** | 编造"收集 16 个铜齿轮"而不确定该物品存在 | 先确认每个涉及的 item ID 存在，再写 task |
+| **Mod 机制 / 交互** | "Mekanism 的化学灌注器需要 AE2 的福鲁伊克斯水晶" | 问用户确认该交互确实存在；不要假设跨 mod 联动 |
+| **进度 / 阶段顺序** | "这个阶段玩家已经有钻石了" / assuming what's available at a point | 问用户该整合包的进度设计；不要推测玩家在某阶段拥有什么 |
+| **方块 / 实体 / 流体 ID** | 猜测 `minecraft:copper_block` 存在（某版本可能没有） | 同物品 ID，查 source 或问用户 |
+| **奖励内容 / reward 物品** | 编造奖励物品而不确认其存在 | 同物品 ID 验证流程 |
+| **数量 / 数值** | "这个机器需要 64 个" / guessing stack sizes, energy values, damage | 问用户确认具体数值 |
+| **FTB Quests 字段 / 类型** | 编造不存在的 type 或 field | 查 `reference/ftb-quests-reference.md` |
+
+**核心原则：宁可空着问用户，不可瞎猜写进 spec。** 任何无法从 verification ladder 验证的内容，必须：
+1. 标记 `[unverified:<category>]`（如 `[unverified:recipe]`、`[unverified:item_id]`、`[unverified:progression]`）
+2. 立即告知用户该内容未经验证
+3. 等待用户确认后再写入 spec
+
+**Verification ladder（从强到弱）：**
 
 1. **Existing pack's quests** → `index_quests.py` writes `.ftbq-cache/existing_quests.json5` with a top-level `known_item_ids` list — every resource location referenced by an existing quest *actually loaded in this pack*. Author against this set when extending a pack (strongest source).
 2. **Mod jars' lang files** → `extract_items.py` writes `.ftbq-cache/items.json5` with `all_item_ids` derived from each mod's `assets/<modid>/lang/en_us.json` keys (`item.<modid>.<name>` → `<modid>:<name>`), plus `.ftbq-cache/item_names.json5` (name↔id, en+zh) for resolving display names → ids in bulk via `lookup_item.py`. Strongest source for a brand-new pack. **Best-effort:** not every registered item has a lang key; treat as a candidate set, not a complete registry.
@@ -108,7 +129,21 @@ FTB Quests silently fails on invented facts — a fabricated item id passes the 
 4. **Recipes & mod mechanics** → ask the user to confirm in JEI/EMI (you can't see in-game recipes); for cross-mod interactions, verify a shared recipe/gate actually exists before writing the quest.
 5. **Final catch** → the Step 5a in-game load-test (`/ftbquests reload`, no chat errors) is the last verifier for anything still `[unverified]`.
 
+**Generation-time progression checks.** Beyond item-ID verification, Step 4 now also reasons about item *reachability* (can the player get this at this point?), reward *bridging* (does this reward lead somewhere?), and teaching *order* (does the chapter teach before it tests?). The reasoning uses builtin lookup tables from `reference/design/shared-builtin-tables.md` and rules R1–R4 from `reference/design/mod-item-reachability.md`, R5(增量)/R6(局部)/R7 from `reference/design/mod-dependency-graph.md`, R10(反向)/R28/R31 from `reference/design/mod-reward-design.md`, R14–R17/R18 from `reference/design/mod-teaching-pacing.md`, R22/R23 from `reference/design/mod-description-trust.md`; anti-pattern context from `reference/design/mod-description-trust.md §AP9–AP11`. See `reference/design/module-index.md` for the full routing table. These are embedded in the Step 4 per-node loop, not a separate checklist — see Step 4 for details.
+
 **In Step 4, before writing a task/reward item:** confirm its id is in `items.json5` `all_item_ids` or `existing_quests.json5` `known_item_ids`; if not, ask the user — don't guess. For a **batch** (many items, e.g. a collection quest), resolve all names in one call via `lookup_item.py` (see "Batch item-id lookup") instead of grepping per item.
+
+**File mutation discipline — read before you write.** Every file modification must be preceded by a fresh read of the target file's current state. Never edit from memory or from a stale context window. The specific protocol:
+
+1. **Before editing any quest config file** (`chapters/*.json5`, `lang/*/quests.json5`, `quests.spec.json5`): read the file first with `Read` or `cat`, confirm the current content matches your expectation, then edit. If the file has changed since you last read it (another session, manual edit, generator re-run), re-read and reconcile before writing.
+2. **Before editing SKILL.md or any reference document**: read the full file, identify the exact section to modify, and use targeted edits (`Edit` tool with precise `old_string` match) rather than rewriting the entire file. A full-rewrite risks losing content you didn't intend to change.
+3. **Before creating a new file in a project**: check whether a file with that name already exists (`ls` or `Glob`). If it does, read it first and decide whether to append, merge, or replace — never silently overwrite.
+4. **Batch operations**: when modifying multiple files in one pass (e.g., generating quests for a whole chapter), read each file before writing. The generator's `--mode preserve` and `content_hash` mechanism protect untouched quests, but you must still verify the output (`validate_quests.py` + `quest_detail.py`) rather than assuming success.
+5. **Data-before-design**: before designing a quest that references a specific mod mechanic, item, recipe, or interaction, gather evidence from the strongest available source (verification ladder above). The order is: existing pack config > mod jar lang files > official mod documentation > community wiki > ask the user. Never write quest content based solely on general knowledge of a mod — mods change between versions, and your training data may be outdated.
+
+This discipline applies to ALL file operations in this skill — not just quest configs, but also SKILL.md updates, reference document edits, and script modifications.
+
+**Self-check before every spec write:** "这个值是我从 verification ladder 查到的，还是我脑子里编的？" 如果是后者 → **停，问用户。**
 
 ---
 
@@ -122,6 +157,8 @@ The full reasoning — F1–F3 (foundational model), P1–P7 (reusable patterns)
 2. Does cross-system gating live in `depends_on`, or in item/recipe requirements?
 3. Is the middle parallel (pick-a-lane) or forced (linear)?
 4. What's the portable spine vs. the pack-type-specific opener?
+
+**Anti-patterns to design against.** Eleven recurring design mistakes are distributed across the modular reference files — from description-reality mismatch (AP1, the most damaging, in `reference/design/mod-description-trust.md`) through circular dependency deadlock (AP2, in `reference/design/mod-dependency-graph.md`) to the three AI-generation-specific risks (AP9–AP11, in `reference/design/mod-description-trust.md`). Load `reference/design/module-index.md` to find which module contains each anti-pattern. Load AP1–AP8 as background knowledge before Step 2; keep AP9–AP11 in mind during Step 4 generation.
 
 ## Quest progression, arrangement & authoring logic
 
@@ -146,6 +183,8 @@ Most real books layer these: a Linear Chapter 1, then Parallel-mod-lines for the
 4. **The capstone touches every system** (see `reference/design/design-guide.md §principles` F3) — ATM's Star sources one component per major mod; if your capstone uses 3 of 20 mods, players ignore the other 17.
 5. **Reward philosophy + pacing up front.** Pick guide-first (roadmap, minimal rewards — Divine Journey 2 / Create: Astral) vs reward-driven (generous — ATM) and commit (lesson 2 / `reference/design/reward-economy.md`). Pacing follows the difficulty curve (`reference/design/difficulty-curve.md`): tutorial → early (16–64 stacks) → mid (1–2 hr bottlenecks) → late (multi-blocks, bosses) → endgame; every ~3rd quest an alternative path.
 6. **`progression_mode` is a per-chapter switch**: `default` (quest locks until dep done — strict order) vs `flexible` (any order, deps hide not lock). ATM ships `flexible` (issue #1136) so passive tasks (advancements/stats/biome visits) count; use `default` when order *is* the lesson.
+
+**Micro-level authoring patterns** — the 34 micro-patterns are distributed across the modular reference files: task combination formulas (MP1–MP5) in `reference/design/mod-item-reachability.md`, dependency topologies (MP6–MP10) in `reference/design/mod-dependency-graph.md`, quest-internal pacing (MP11–MP13) and stage marking (MP19–MP23) in `reference/design/mod-teaching-pacing.md`, reward bridging (MP14–MP18) in `reference/design/mod-reward-design.md`. Load `mod-item-reachability` and `mod-reward-design` before Step 4 node generation; load `mod-dependency-graph` and `mod-teaching-pacing` before Step 2 outline design. See `reference/design/module-index.md` for the full routing table.
 
 **Linear vs nonlinear — the dependency wiring:**
 - **Linear:** `dependency_requirement: "all"`, each quest depends on the prior — one path, no choices. Good for teaching a forced sequence.
@@ -335,21 +374,40 @@ python scripts/generate_quests.py <output_dir>
 
 ### Step 4 — Polish one node at a time (the loop)
 
-**Anti-囫囵 rule:** do NOT write the tasks/rewards for the whole book at once. Iterate over the outline nodes — but **scale the loop to the book**: ≤~20 quests → one node at a time with per-node sign-off (steps 1–6 below); ~20–100 → batch by chapter (co-author a chapter's nodes in the spec, regenerate + validate once per chapter, sign off per chapter); >~100 → batch by chapter and skip per-node sign-off, revisiting only quests the validator flags. The incremental merge + `content_hash` still protect untouched quests across a batch. This is where the user 打磨 each task.
+**Anti-囫囵 rule:** do NOT write the tasks/rewards for the whole book at once. Iterate over the outline nodes — but **scale the loop to the book**: ≤~20 quests → one node at a time with per-node sign-off (steps 1–7 below); ~20–100 → batch by chapter (co-author a chapter's nodes in the spec, regenerate + validate once per chapter, sign off per chapter); >~100 → batch by chapter and skip per-node sign-off, revisiting only quests the validator flags. The incremental merge + `content_hash` still protect untouched quests across a batch. This is where the user 打磨 each task.
+
+Before the first node, load `reference/design/mod-description-trust.md §AP9–AP11` (AI-generation anti-patterns) as background context — these three risks (hallucination cascade, style homogenization, narrative inconsistency) are specific to AI-generated quest configs and inform every step below.
 
 For each node:
+
 1. **Pick one quest** (main-line order; side branches after their fork point). Say which one you're polishing.
-2. **Co-author its content** — grill per the Step 2 interview discipline: ONE question with your recommended answer, wait for the user, then the next (task type + target + count → reward type + payload → description text). **Never dump a list of questions.** "帮我设计" → draft the content yourself, user approves/edits; "我要指定每个任务" → ask per task. Resolve mod mechanics / reward effects by checking the codebase or asking — never guess. Before writing a task/reward item, confirm its id is in `.ftbq-cache/items.json5` `all_item_ids` or `existing_quests.json5` `known_item_ids` (Step 1); if it isn't listed, ask the user to confirm it in JEI/EMI — **never invent an item id** (see "Verify, don't fabricate"). For a **collection quest / many-item batch**, resolve all the display names → ids in one call with `lookup_item.py <packroot> <name>…` (see "Batch item-id lookup") and write tasks from those results — don't grep `all_item_ids` N times. When writing the description text, follow **Quest text & description writing style** (near the top of this skill) — natural, concise prose, not label-value 要素式 checklists; the quest UI already shows the item/count/reward, so spend the description on the *why* and *how*.
+
+2. **Co-author its content** — grill per the Step 2 interview discipline: ONE question with your recommended answer, wait for the user, then the next (task type + target + count → reward type + payload → description text). **Never dump a list of questions.** "帮我设计" → draft the content yourself, user approves/edits; "我要指定每个任务" → ask per task. Resolve mod mechanics / reward effects by checking the codebase or asking — never guess. Before writing a task/reward item, confirm its id is in `.ftbq-cache/items.json5` `all_item_ids` or `existing_quests.json5` `known_item_ids` (Step 1); if it isn't listed, ask the user to confirm it in JEI/EMI — **never invent an item id** (see "Verify, don't fabricate"). Before modifying any existing quest's tasks/rewards in the spec, re-read the spec file to confirm the quest's current state — do not edit from a stale outline or memory of a previous session. For a **collection quest / many-item batch**, resolve all the display names → ids in one call with `lookup_item.py <packroot> <name>…` (see "Batch item-id lookup") and write tasks from those results — don't grep `all_item_ids` N times. When writing the description text, follow **Quest text & description writing style** (near the top of this skill) — natural, concise prose, not label-value 要素式 checklists; the quest UI already shows the item/count/reward, so spend the description on the *why* and *how*.
+
+   **Item reachability reasoning (before finalizing each task).** Before you commit an `ftbquests:item` task to the spec, answer this question internally: *"How does the player obtain this item at this point in the progression?"* Walk the quest's ancestor chain (the `depends_on` path back to the chapter root) and check whether the item's source dimension, tool tier, and recipe depth are all reachable from what the ancestors unlock. Use the builtin lookup tables in `reference/design/shared-builtin-tables.md` (dimension map, tool tier map, recipe depth heuristic) for common vanilla and cross-pack items; for pack-specific items, reason from the ancestor quests' rewards and the mod's known recipe ladder. If you cannot confirm reachability — the item comes from a dimension no ancestor opens, requires a tool no ancestor provides, or sits deeper in a recipe chain than the dependency depth allows — mark the task `[unverified:progression]` and surface it to the user before writing it. This is the generation-time counterpart to the Step 5 validation rules R1–R4 (`reference/design/mod-item-reachability.md`); catching the problem here avoids a round-trip through validate-and-fix.
+
+   **Reward bridge reasoning (after drafting each reward).** Once you have a reward drafted, answer: *"What does this reward lead the player to do next?"* A well-bridged reward appears as a task item in a dependent quest (the material bridge pattern, `reference/design/mod-reward-design.md §MP14`), or is a universal bridge type (tool reward `§MP15`, XP drip `§MP16`). If the reward is an item that no downstream quest requires and it isn't a recognized universal bridge, it's a dead-end reward (`reference/design/mod-reward-design.md §AP6`) — redesign it so the player has a clear next step. For terminal quests (capstone, chapter leaf) this check doesn't apply. The formal rule is R10–R13 in `reference/design/mod-reward-design.md`; at generation time you're doing the same reasoning by hand, one reward at a time.
+
 3. **Update ONLY that quest** in `quests.spec.json5` (fill its `tasks`/`rewards`) and its `quest_desc` / `quest_subtitle` in the **primary locale's** lang file. Leave every other quest's empty `tasks: []` untouched. Translate to secondary locales in a dedicated pass after the primary is settled (Step 4 done) — don't block each node's sign-off on every locale; the generator's lang is add-only per locale, so mirror the primary's keys. If no translator, ship the primary and flag secondaries for the user/pack team. In the spec, references use `name` (within a chapter) or `<chapter>/<quest>` (across chapters); raw 16-hex tokens pass through for existing-pack linkage (see "Task linkage" below).
+
 4. **Regenerate** — `python scripts/generate_quests.py <output_dir>`. The incremental merge keeps every other quest pristine (content_hash match → no-op) and re-emits only the quest you touched; in-game position edits to other quests are preserved regardless of mode. The ID-uniqueness check runs pre-emit, so a name clash fails fast before any file is written.
+
 5. **Verify that one quest** — `python scripts/validate_quests.py <output_dir>/quests/` (fast; diagnostics carry `file:line:col`), then preview JUST that quest instead of reading the whole chapter file:
    ```bash
    python scripts/quest_detail.py <output_dir> <chapter>/<quest>
    ```
    It resolves the quest by name (via the spec's pack + the id formula) and prints only that quest's id/shape/deps/tasks/rewards/lang — token-saving vs. reading the whole chapter.
-6. **Show a focused summary** of just that quest (id, tasks, rewards, lang title/desc) and ask: keep & continue, or revise? Only advance to the next node when the user is happy with this one.
 
-**Batching by chapter:** fill all of a chapter's quests' `tasks`/`rewards` in `quests.spec.json5`, then run `generate_quests.py` once + `validate_quests.py` once; use `generate_quests.py --dry-run` to preview the batch before committing. Run `quest_detail.py` per node only for quests that fail validation or that you want to spot-check.
+6. **AI generation self-check (per node).** After the quest passes validation and before presenting the summary, review it for the three AI-specific anti-patterns (`reference/design/mod-description-trust.md §AP9–AP11`):
+   - **Description-item consistency (R23).** Does the `quest_desc` mention any item ID that doesn't appear in this quest's tasks or rewards? Conversely, does the description fail to explain a task item that the player needs context for? The static rule in `reference/design/mod-description-trust.md` catches ID-level mismatches; at generation time, read the description you just wrote and confirm every named item matches the config, and every config item has a reason to be there.
+   - **Style drift (AP10).** Compare this quest's description structure to the last 2–3 quests you polished. Are they all following the same template ("Obtain [item]. This is needed for [next step].")? Vary the description mode — how-to, lore, tip, challenge — so the chapter doesn't read like a form letter. Reward amounts and shape vocabulary should vary too (`reference/design/mod-description-trust.md §AP10` for detection heuristics).
+   - **Narrative continuity (AP11).** If this quest's description makes a forward reference ("you'll need this for the next quest") or a difficulty claim ("the hardest craft so far"), verify the referenced quest actually exists and matches. Check that the tone (casual / technical / lore-heavy) is consistent with the chapter's established voice — a tonal lurch between adjacent quests breaks the player's trust in the book as a guide.
+
+7. **Show a focused summary** of just that quest (id, tasks, rewards, lang title/desc) and ask: keep & continue, or revise? Only advance to the next node when the user is happy with this one.
+
+**Chapter-level teaching order check.** After all quests in a chapter are polished (or after a chapter batch), step back and verify the chapter's internal teaching sequence. The two patterns to confirm are Teach-Then-Do (`reference/design/mod-teaching-pacing.md §MP11`) and Tier Escalation (`reference/design/mod-teaching-pacing.md §MP12`): for each mod mechanic the chapter covers, a teaching quest (checkmark/stat task + long description explaining the concept) should appear *before* the doing quest (item task requiring the player to apply what was taught); and within a material or tool tier, quests should escalate from cheapest/simplest to most expensive/complex. The formal rules R14–R17 (`reference/design/mod-teaching-pacing.md`) detect inversions statically; at generation time, read the chapter's quest list in dependency order and confirm that no doing-quest precedes its teaching-quest, and no high-tier quest appears before a lower-tier one. If you find an inversion, reorder the `depends_on` chain in the outline and update the spec before moving to the next chapter. This is also the moment to check for AP9 hallucination cascade (`reference/design/mod-description-trust.md §AP9`) across the whole batch — scan every item ID introduced during this chapter's generation against `items.json5` one more time, rather than trusting that each per-node check was sufficient.
+
+**Batching by chapter:** fill all of a chapter's quests' `tasks`/`rewards` in `quests.spec.json5`, then run `generate_quests.py` once + `validate_quests.py` once; use `generate_quests.py --dry-run` to preview the batch before committing. Run `quest_detail.py` per node only for quests that fail validation or that you want to spot-check. When batching, the item reachability and reward bridge reasoning (step 2) apply to each quest as you write it into the spec; the AI self-check (step 6) and the chapter-level teaching order check run once after the whole batch is written.
 
 Re-run modes:
 
@@ -372,6 +430,8 @@ python scripts/validate_quests.py <output_dir>/quests/
 python scripts/validate_quests.py <output_dir>/quests/ --strict       # also: --fix (autofix), --json (CI)
 ```
 If the script is unavailable, see reference §15 for the full diagnostics catalog and self-check against it.
+
+The whole-book validation runs the full progression-rules pipeline (R1–R32, distributed across the modular reference files — see `reference/design/module-index.md` for routing) — item reachability across the complete dependency graph, reward continuity across all chapters, teaching order for every chapter, description consistency for every quest, command safety, team progression consistency, and chapter-level QA heuristics. The Step 4 per-node checks are a generation-time subset; Step 5 catches cross-quest and cross-chapter issues that only become visible once the full graph exists.
 
 > **Dev testing — scope it.** When you change skill code (scripts/, ftbq/) during a session, avoid running the full test suite on every iteration. Run only the test module(s) that cover what you touched — see the "Test → source map" in `CONTRIBUTING.md`. Reserve the full suite for pre-push / pre-release / shared-surface changes (the JSON5 parser, the canonical emitter, the `generate()` signature).
 
@@ -566,3 +626,5 @@ If the detected format does not match any pattern described here (neither modern
 Format verified against FTB Quests source 2026-06-25: [`FTBTeam/FTB-Quests`](https://github.com/FTBTeam/FTB-Quests) (`main` MC `26.1.x` JSON5 + `1.20.1/main` SNBT), [`FTBTeam/FTB-Library`](https://github.com/FTBTeam/FTB-Library) (SNBT), [`marhali/json5-java`](https://github.com/marhali/json5-java). The 1.20.1 SNBT format (§12) is implemented in `ftbq/snbt.py` (emitter+parser), confirmed against the Java source (`BaseQuestFile`/`Quest`/`ItemTask`/`ItemReward`/`XPTask`/`RewardTable`/`QuestLink`/`ChapterImage`); reward tables (§17), quest links (§18), chapter images (§19), top-bit ID mask (§9), item-count/XP-`points`/command-placeholder corrections (§7) likewise confirmed. Generator/manifest (§13/§14), validator diagnostics (§15), deploy layout (§16) in reference.
 
 **Empirical data** audited 2026-06-29 (reference §20) against Create: Delight Remake (1.20.1) + Mechanomania (1.21.1) — ground the field-findings layout/reward lessons. **ATM-series data** researched 2026-06-30 from `AllTheMods/ATM-9` + `AllTheMods/ATM-10` repos, `alltheguides`, Discussion `#3539`, ATM9's KubeJS lang, plus Create: Astral, FTBTeam issue #1136, r/feedthebeast — ground the kitchen-sink / progression sections in this skill and the synergy / text-style / ATM10 deep-dive content in `reference/design/design-guide.md` (lessons 6–14). **ATM10 file audit** (4,601 quests / 64 chapters, parsed via `ftbq/snbt.py`) grounds `reference/design/design-guide.md §principles` (F1–F3, P1–P7). **ATM9/ATM10 layout audit** 2026-07-05 (12 chapters / 883 quests, 6 per pack) — ground `reference/design/design-guide.md §atm-layout-patterns` Templates 1–5 (kitchen-sink layout templates with measured spacing, shape-role correlations, and grid parameters). **Cross-genre pack audit** 2026-07-05 (8 additional packs, ~40 chapters / ~2,800 quests: Monifactory, ATM6-Expert, ATM9-Sky, Arcana, Prominence II RPG, Create: Astral, Create Skylands, Enigmatica 9, ATM-11) — ground Templates 6–7 (Hexagonal Expert Web, Narrative World Map) and `§pack-type-patterns` (expert gating, skyblock openers, magic spell-trees, RPG map reveals, Create age-based chapters).
+
+**Progression validation framework** developed 2026-07-05, now organized as modular reference files (see `reference/design/module-index.md` for the full index): 32 rules (R1–R32), 34 micro-patterns (MP1–MP30 + PP1–PP6), and 11 anti-patterns (AP1–AP11) distributed across `mod-item-reachability.md`, `mod-dependency-graph.md`, `mod-reward-design.md`, `mod-teaching-pacing.md`, `mod-description-trust.md`, `mod-system-safety.md`, `mod-atm-signature.md`, and `shared-builtin-tables.md`. Grounded in the same 11-pack audit corpus as the design guide, plus cesspit.net expert-pack analysis, FTBTeam/FTB-Modpack-Issues #6447 player feedback, GTNH/E2E Extended design documents, and awesome-packdev community toolchain references.
