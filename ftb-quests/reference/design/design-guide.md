@@ -296,7 +296,7 @@ This template is fundamentally different from kitchen-sink layouts because it's 
 - ATM: `flexible` progression, `hide_dependency_lines` for visual cleanliness, shape = mod identity
 - Expert: `default`/`linear` progression, `hide_until_deps_visible` for progressive reveal, shape = difficulty tier
 - ATM: item tasks + rewards as the primary interaction
-- Expert: `gamestage` tasks for invisible gating, `command` rewards for automation, item-submission tasks (not just "obtain")
+- Expert: `gamestage` tasks for invisible gating, `command` rewards for automation, item-submission tasks (not just "obtain"). Note: `gamestage` tasks also appear in non-expert packs (e.g., Skylore skyblock) — the association is Game Stages mod-presence-dependent, not difficulty-dependent
 
 **When to use:** expert/GregTech packs with enforced progression order, deep tech trees, and cross-mod dependencies. NOT for kitchen-sinks where the player picks their path.
 

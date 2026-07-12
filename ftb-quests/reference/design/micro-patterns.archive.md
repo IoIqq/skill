@@ -38,7 +38,7 @@ The second key finding is that **dependency topology correlates with pack genre*
 
 The third key finding (from Cycle 2 Phase 2 player feedback cross-validation) is that **the mod-unification trap** — where multiple mods provide items with the same display name but different namespaces — is a pervasive source of quest errors that static analysis struggles to detect. It manifests as both description-reality mismatches (AP1) and dead-end rewards (AP6/PP6), and requires the quest author to know which mod's variant is canonical for each recipe chain.
 
-The fourth key finding (Cycle 3) is that **expert packs converge on command rewards as invisible infrastructure** rather than gamestage tasks in visible chapters. Monifactory's `dependency_chain` chapter uses 26 gamestage tasks + 26 command rewards as dedicated routing, while all 13 visible chapters have zero gamestage tasks. E9E goes further: 56 command rewards in `chapter_one` alone (83% of reward sections) but zero gamestage tasks in visible chapters. The visible quest book stays clean; the invisible logic runs through command rewards. This validates MP29 (Command Reward) and MP23 (Invisible Infrastructure) with multi-source data.
+The fourth key finding (Cycle 3, expanded Cycle 6) is that **expert packs converge on command rewards as invisible infrastructure** rather than gamestage tasks in visible chapters. Monifactory's `dependency_chain` chapter uses 26 gamestage tasks + 26 command rewards as dedicated routing, while all 13 visible chapters have zero gamestage tasks. E9E goes further: 56 command rewards in `chapter_one` alone (83% of reward sections) but zero gamestage tasks in visible chapters. The visible quest book stays clean; the invisible logic runs through command rewards. Cycle 6 Phase 3 reveals a **3-generation command reward evolution lineage**: E6 (MC 1.16.5, 455 commands as `/execute at @p run loot spawn` vanilla loot delivery) → E9E (MC 1.19.2, 56 commands as `/gamestage add` progression routing) → E10 (MC 1.21, 0 commands, 28 native reward tables). Command rewards evolved from a workaround for missing native loot table support (Gen 1) to a progression routing tool (Gen 2) to obsolescence (Gen 3). This validates MP29 (Command Reward) and MP23 (Invisible Infrastructure) with 4-source data (Monifactory + E9E + E6 + E10).
 
 The fifth key finding (Cycle 3 Phase 2) is that **high-quality expert packs can have zero quest design complaints on their public issue trackers.** Enigmatica 10 — a high-profile MC 1.21.1 expert pack — has no quest-related issues among ~20 recent GitHub issues, while comparable packs (Craftoria, Monifactory, FTB official packs) have multiple. This negative evidence suggests that effective quest QA processes (playtesting, internal review) can eliminate the common AP1–AP8 failures before players encounter them. The contrast with FTB Architect's Exodus (11+ quest issues in its first months) and Craftoria (6+ quest design issues) highlights that quest quality is not inherent to the pack genre but depends on authoring discipline.
 
@@ -69,8 +69,8 @@ The following table maps every micro-pattern to its applicable pack types, the S
 | MP13 Explore-Then-Craft | kitchen-sink, story, skyblock | Step 2 | High (ATM-10, ATM-9, ATM-10-Sky) |
 | MP14 Material Bridge | all | Step 4 | High (15 packs) |
 | MP15 Tool Reward | all | Step 4 | High (15 packs) |
-| MP16 XP Drip | kitchen-sink | Step 4 | † ATM Signature — High (ATM-10, ATM-9, ATM-8); Monifactory "varies" (no concrete XP drip data) |
-| MP17 Hub Concentration | create, kitchen-sink | Step 2 | Medium (Create: Delight primary) |
+| MP16 XP Drip | kitchen-sink (ATM-style generous) | Step 4 | † ATM Signature — High (ATM-10, ATM-9, ATM-8); Monifactory "varies" (no concrete XP drip data) |
+| MP17 Hub Concentration | create | Step 2 | Medium (Create: Delight primary; kitchen-sink removed — no evidence in ATM-10) |
 | MP18 Choice Reward | expert, story | Step 4 | Medium (3 packs) |
 | MP19 Chapter-as-Stage | all | Step 2 | High (15 packs) |
 | MP20 Shape-as-Tier Signal | kitchen-sink (ATM-style) | Step 2 | † ATM Signature — High within ATM series; Low outside (curated packs use 3-8% explicit shape) |
@@ -82,17 +82,17 @@ The following table maps every micro-pattern to its applicable pack types, the S
 | MP26 Reward-Continuity Check | all | Step 5 | → See R10 |
 | MP27 Fluid Task Gate | kitchen-sink, expert, create | Step 4 | Medium (tech packs) |
 | MP28 Energy Threshold Gate | kitchen-sink, expert, create | Step 4 | Medium (tech packs) |
-| MP29 Command Reward (invisible logic) | expert, story | Step 4 | High (Monifactory + E9E, multi-source Cycle 3) |
+| MP29 Command Reward (invisible logic) | expert, story, kitchen-sink (legacy) | Step 4 | High (Monifactory + E9E + E6 + E10, 4-source Cycle 3+6) |
 | MP30 Gamestage Bridge | expert | Step 2 + Step 4 | Medium (Monifactory primary, validated by E9E command pattern) |
 | MP31 Structure Discovery Gate | skyblock, kitchen-sink, story | Step 4 | Medium (ATM-10-Sky, ATM-9, All-the-Mons) |
-| MP32 min_tasks Modifier (partial completion) | create, kitchen-sink | Step 4 | Low (Create: Astral only, single-source) |
-| MP33 Advancement Gate (vanilla advancement checkpoint) | all | Step 4 | Medium (Enigmatica 10, 3 cases; single-source) |
-| MP34 Loot Table Reward (randomized reward via reward tables) | all | Step 4 | Low (Craftoria, 2 cases; single-source) |
+| MP32 min_tasks Modifier (partial completion) | create | Step 4 | Low (Create: Astral only, single-source; kitchen-sink removed — no evidence in 15-pack audit) |
+| MP33 Advancement Gate (vanilla advancement checkpoint) | expert (verified) | Step 4 | Low (Enigmatica 10 only, 3 cases; `all` removed — not observed in ATM-10, Create: Delight, Monifactory) |
+| MP34 Loot Table Reward (randomized reward via reward tables) | all | Step 4 | Medium (Craftoria + AoF3, multi-source Cycle 4+6) |
 | PP1–PP7 Player-Perspective | all | Step 2 | High (player feedback) |
 
 > **† ATM Signature Patterns:** MP4, MP16, MP20, MP21, MP22 的核心证据全部来自 AllTheMods 团队的包（ATM-8/9/10/10-Sky），其具体实现形态是 ATM 设计哲学的体现而非 FTB Quests 的通用模式。概念（escalation, XP reward, shape semantics, dimension gating, material tiers）是通用的，但案例全是 ATM 做法。Non-ATM 包作者阅读时应意识到这一点。
 >
-> **Single-source patterns (需更多数据确认):** MP32 (Create: Astral min_tasks), MP33 (Enigmatica 10 advancement gate), MP34 (Craftoria loot table reward). MP4, MP13, MP20, MP21, MP22 were single-source in Cycle 1 but are now validated across the ATM series (ATM-8, ATM-9, ATM-10, ATM-10-Sky). MP23 and MP29 were single-source in Cycle 1 but are now validated across Monifactory + E9E in Cycle 3.
+> **Single-source patterns (需更多数据确认):** MP32 (Create: Astral min_tasks), MP33 (Enigmatica 10 advancement gate). MP4, MP13, MP20, MP21, MP22 were single-source in Cycle 1 but are now validated across the ATM series (ATM-8, ATM-9, ATM-10, ATM-10-Sky). MP23 and MP29 were single-source in Cycle 1 but are now validated across Monifactory + E9E in Cycle 3 and further with E6 + E10 in Cycle 6 (4-source). MP34 was single-source (Craftoria only) in Cycle 4 but is now validated by AoF3 (16 reward tables) in Cycle 6 — TeamAOF reward table lineage confirmed (AoF3→Craftoria).
 
 ---
 
@@ -410,7 +410,7 @@ ATM-10 uses XP drip extensively: the welcome chapter gives 10 XP per quest, the 
 
 **Quantified:** ATM-10 has 6,915 total rewards across 4,601 quests = 1.5 rewards per quest. The majority are `item` + `xp` pairs. Create: Delight follows a similar pattern (item×803, xp×195 = ~1,000 rewards for 2,295 quests ≈ 0.43 rewards/quest, but the rich chapters like Mouse_Chef concentrate rewards on hubs). Mechanomania is the counter-example: only 43 total rewards for 395 quests (0.11 rewards/quest — the "sparse" lane).
 
-> **† ATM Signature:** XP Drip 的 generous reward philosophy（每 quest 给 XP + item）是 ATM 系列的设计签名。Expert 包的 reward 系统不以 XP drip 为核心（Monifactory 的 reward 更侧重 machine unlock 和 stage progression）。Create 系列明确不使用 XP drip（Create: Delight 0.43 rewards/quest, Mechanomania 0.11 rewards/quest）。Scope 已从 `kitchen-sink, expert` 修正为 `kitchen-sink`，反映这一差异。
+> **† ATM Signature:** XP Drip 的 generous reward philosophy（每 quest 给 XP + item）是 ATM 系列的设计签名。Expert 包的 reward 系统不以 XP drip 为核心（Monifactory 的 reward 更侧重 machine unlock 和 stage progression）。Create 系列明确不使用 XP drip（Create: Delight 0.43 rewards/quest, Mechanomania 0.11 rewards/quest）。Scope 已从 `kitchen-sink, expert` 修正为 `kitchen-sink`，再进一步限定为 `kitchen-sink (ATM-style generous)`——XP drip 不是所有 kitchen-sink 的通用模式，而是 ATM-style generous reward philosophy 的特定做法（排除 sparse reward 或 random-dominant 经济的 kitchen-sink 包）。
 
 ### MP17 — Hub Concentration (sparse cells, rich hubs)
 
@@ -421,6 +421,8 @@ ATM-10 uses XP drip extensively: the welcome chapter gives 10 XP per quest, the 
 This pattern prevents reward inflation in large catalogs. If every cell gave a reward, a 300-quest catalog would give 300 rewards — overwhelming the player. Concentrating rewards on hubs (12 hubs for 300 cells) gives 12 meaningful reward moments instead.
 
 **Real case (Create: Delight Remake, Mouse_Chef):** 304 cells have only item×29 + xp×52 (sparse). The 12 category hubs have coin rewards (netherite_coin) and checkmark tasks. The ratio is roughly: 1 reward per 4 cells, with the hubs carrying the most valuable rewards.
+
+> **Scope note (Cycle 7):** `kitchen-sink` 已从 pack_types 中删除。ATM-10（kitchen-sink）不使用 hub concentration 模式——其 reward 分布更均匀（XP drip philosophy, 1.5 rewards/quest），不存在「sparse cells, rich hubs」的明显分化。Hub concentration 的核心证据仅来自 Create: Delight 的 Mouse_Chef catalog chapter。pack_types 从 `create, kitchen-sink` 修正为 `create`。
 
 ### MP18 — Choice Reward (branch-point fork)
 
@@ -566,16 +568,19 @@ Energy tasks are unique because they test *infrastructure*, not *items*. The pla
 
 ### MP29 — Command Reward (server-side invisible logic)
 
-**Applicable when:** a quest needs to trigger a server-side action that isn't achievable through standard reward types — granting a gamestage, teleporting the player, applying a potion effect, running a KubeJS script, or modifying the world state.
+**Applicable when:** a quest needs to trigger a server-side action that isn't achievable through standard reward types — granting a gamestage, teleporting the player, applying a potion effect, running a KubeJS script, modifying the world state, or (legacy MC ≤1.16.5) delivering loot via vanilla loot tables.
 
-**Implementation:** A `command` reward with `command: "/<command>"` and optional `player: "{p}"` (the completing player). The command runs server-side when the quest is claimed. Common commands: `/gamestage add {p} <stage_name>` (unlock a gamestage), `/effect give {p} <effect> <duration> <amplifier>` (temporary buff), `/tp {p} <x> <y> <z>` (teleportation), `/give {p} <item> <count>` (item grant when item rewards aren't flexible enough).
+**Implementation:** A `command` reward with `command: "/<command>"` and optional `player: "{p}"` (the completing player). The command runs server-side when the quest is claimed. Common commands: `/gamestage add {p} <stage_name>` (unlock a gamestage), `/effect give {p} <effect> <duration> <amplifier>` (temporary buff), `/tp {p} <x> <y> <z>` (teleportation), `/give {p} <item> <count>` (item grant when item rewards aren't flexible enough), `/execute at @p run loot spawn ~ ~1 ~ loot <namespace>:<table>` (legacy loot delivery, MC ≤1.16.5), `/packmode <mode>` (GreedyCraft pack-mode switching).
 
 Command rewards are the most powerful and most dangerous reward type. They execute with server-level permissions, meaning a poorly written command can crash the server, give the player operator-level items, or corrupt world state. The `{p}` placeholder is replaced with the completing player's name — always use `{p}` rather than hardcoding a player name.
 
 **Safety rules:** (1) Never use command rewards that grant operator permissions (`/op`, `/gamemode creative`). (2) Test every command in a single-player world before including it in a quest. (3) Prefer standard reward types when possible — use `item` rewards instead of `/give`, use `xp` rewards instead of `/xp`. Command rewards should be reserved for actions that standard types can't express. (4) When using `/gamestage add`, verify the stage name against the pack's gamestage configuration — a typo creates a silent failure (the command runs but the stage doesn't exist).
 
-**pack_types:** expert, story
+**Enigmatica command reward lineage (Cycle 6 Phase 3):** E6 (MC 1.16.5): 455 command rewards ALL using `/execute at @p run loot spawn ~ ~1 ~ loot enigmatica:chests/quest_*` — vanilla loot table delivery as workaround for missing native FTB loot tables. E9E (MC 1.19.2): 56 command rewards shifted to `/gamestage add {p}` — progression routing. E10 (MC 1.21): 0 command rewards, 28 native reward tables — the workaround is no longer needed. **On FTB Quests 26.x+, always prefer `type: "loot"` or `type: "random"` for loot delivery.**
+
+**pack_types:** expert, story, kitchen-sink (legacy MC ≤1.16.5)
 **Phase:** Step 4 (node generation)
+**Source confidence:** Multi-source (Monifactory + E9E Cycle 3; E6 + E10 Cycle 6)
 
 ---
 
@@ -627,7 +632,7 @@ This is related to `dependency_requirement: "one_completed"` (MP9 diamond) but o
 
 **Design considerations:** (1) Keep the gap between `min_tasks` and total tasks small (1–3) — if a quest has 10 tasks and only requires 2, the other 8 feel like padding. (2) Use `min_tasks` when the tasks are genuinely equivalent alternatives (two recipes for the same item, two ways to reach the same goal), not when they're a checklist with a lowered bar. (3) Always make `min_tasks` visible in the quest description — the player needs to know "you only need 3 of these 5" to make informed choices.
 
-**pack_types:** create, kitchen-sink
+**pack_types:** create
 **Phase:** Step 4 (node generation)
 
 > **与 MP9 的功能重叠：** MP32 在功能上与 MP9 (Diamond / pick-and-rejoin) 重叠。文档自身已承认这一点："This is related to `dependency_requirement: 'one_completed'` (MP9 diamond) but operates at the task level rather than the dependency level." `min_tasks` 是 quest-level 的"选 N 完成"机制，而 `one_completed` 是 dependency-level 的"选 1 完成"机制。当 MP9 已经满足设计需求时，不需要额外使用 MP32。此外，`kitchen-sink` scope 标注缺乏数据支撑——15 个包中无 kitchen-sink 包使用 `min_tasks` 的证据。MP32 可视为 MP9 的 task-level 变体，而非一个独立的设计模式。
@@ -650,8 +655,10 @@ Advancement tasks differ from item tasks (MP1) in a crucial way: they verify tha
 
 **Design considerations:** (1) Verify the advancement ID exists in the pack's advancement data — custom mod advancements may use non-standard namespaces. (2) Advancement tasks auto-complete, which means the player may not notice the quest completing if they earn the advancement during normal gameplay. Pair with a visible reward (item drop, XP burst) so the player gets feedback. (3) For gamestage-gated packs, advancement tasks can serve as the trigger that grants a gamestage — the advancement completes, the reward is a `command` or `gamestage` reward that opens the next tier (MP29 + MP30). This creates a clean three-step chain: achieve advancement → auto-complete quest → grant stage. (4) Unlike `custom` tasks (AP14), advancement tasks are safe for AI generation because the type is natively supported and the advancement ID can be verified against the pack's advancement data.
 
-**pack_types:** all
+**pack_types:** expert (verified)
 **Phase:** Step 4 (node generation)
+
+> **Scope note (Cycle 7):** `all` 已从 pack_types 修正为 `expert (verified)`。虽然 `advancement` task type 是 FTB Quests 原生功能，但「使用 advancement task 作为进度检查点」这一设计决策仅在 Enigmatica 10 中观察到（3 cases）。ATM-10（4,601 quests）、Create: Delight（2,295 quests）、Monifactory（248 quests）的审计数据中均未出现 advancement task 的系统性使用。置信度从 Medium 降为 Low。
 
 ---
 
@@ -671,6 +678,85 @@ Loot table rewards differ from standard item rewards (MP14, MP15) in that the ou
 **Phase:** Step 4 (node generation)
 
 > **与 MP14–MP18 的互补关系：** MP34 提供的随机性是 reward bridging 的补充而非替代。MP14 (Material Bridge) 和 MP15 (Tool Reward) 是确定性桥接——奖励就是下一步需要的东西。MP34 (Loot Table Reward) 是随机性增值——在确定性桥接之上增加变化和惊喜。一个好的设计通常是：确定性奖励保底（MP14/MP15），随机奖励加码（MP34）。两者共存于同一 quest 的 reward 数组中。
+
+---
+
+### MP35 — Dual-Task Automation Verification
+
+**Applicable when:** the pack requires players to build actual automation (e.g. Create contraptions) rather than hand-crafting items. Each quest uses two tasks: an item task with `consume_items: false` (prove you can make it) AND a checkmark task labeled "automated" (confirm you built a machine to produce it).
+
+**Implementation:** Quest has two tasks: (1) `type: "item"` with `consume_items: false` — the item is displayed but not consumed, serving as a "prove it exists" check; (2) `type: "checkmark"` with title like "Automated" — the player clicks to confirm they built automation. The combination forces the player to both produce the item AND acknowledge they did so through automation, not hand-crafting.
+
+This pattern is specific to Create-focused expert packs where automation is the core gameplay loop. The `consume_items: false` field is critical — it means the item stays in the player's inventory, allowing them to use it for further processing. The checkmark serves as an honor-system verification that the player built a Create contraption.
+
+**Real case (Cabricality, stage_1 and stage_3):** Nearly every quest uses this dual-task structure. stage_1: 27 item tasks + 18 checkmark tasks with `consume_items: false` heavy (20 instances). stage_3: 54 item tasks + 26 checkmark tasks with 44 `consume_items: false`. stage_4: 33 item tasks + 25 checkmark tasks with 29 `consume_items: false`. The checkmark title uses i18n key `{contraption.cabricality.automated}`.
+
+**Design considerations:** (1) This pattern only works in packs where automation is the central mechanic — using it in a kitchen-sink would be unnecessarily restrictive. (2) The honor system relies on player integrity; determined players can click the checkmark without building automation. (3) The `consume_items: false` flag is essential — consuming items would defeat the purpose by forcing the player to re-craft for each quest. (4) Pair with descriptive text explaining WHY automation is expected.
+
+**pack_types:** create (expert), expert
+**Phase:** Step 4 (node generation)
+**Source confidence:** single-source (Cabricality only — no evidence in non-Create expert packs)
+
+> **Scope note (Cycle 7):** pack_types 从 `create` 进一步限定为 `create (expert), expert`。MP35 的核心证据仅来自 Cabricality（Create-centric expert pack），而 Create: Delight（2,295 quests）、Mechanomania（395 quests）、Create: Astral（~650 quests）均不使用此模式。此模式本质上是 Cabricality 的特定设计理念（荣誉制度确认自动化），不是 Create 包的通用做法。验证置信度: 低。
+
+---
+
+### MP36 — Currency-as-Reward (universal exchange medium)
+
+**Applicable when:** the pack has an in-game currency or trading system, and quest rewards should bridge to ANY purchasable item rather than a specific next-quest ingredient. The reward is a currency item (coins, credits) that the player spends at shops, trade stations, or trading systems.
+
+**Implementation:** Standard `type: "item"` reward with a currency item ID (e.g. `gtocore:copper_coin`, `lightmanscurrency:coin_iron`, `lightmanscurrency:coin_gold`). The currency item is not consumed by any quest task — it's accumulated and spent at the player's discretion through the pack's economy system.
+
+Distinct from MP14 (Material Bridge): currency doesn't bridge to a specific recipe, it bridges to a shop. Distinct from MP16 (XP Drip): currency is an item, not XP, and has purchasing power tied to the pack's trade system. Similar to MP16 in concept — a universal baseline reward — but implemented through item-type rewards.
+
+**Real case (GregTech-Odyssey):** Uses `gtocore:copper_coin` as early-game currency rewards. Players accumulate coins to spend at the shop chapter's trading system. The shop chapter has no dependencies and serves as a currency sink.
+
+**Real case (No-Flesh-Within-Chest):** Uses `lightmanscurrency:coin_iron` and `coin_gold` as rewards throughout the main chapters. 42 lightmanscurrency references in the boss chapter alone. Combined with `wares:delivery_agreement` trade contracts, creating a multi-layer economy.
+
+**Design considerations:** (1) Currency rewards need a corresponding currency sink (shop, trade station) to have value. Without a sink, currency accumulates uselessly. (2) Calibrate currency amounts against shop prices — inflation devalues the reward. (3) Currency is genre-appropriate for packs with trading systems (expert, RPG, hardcore); avoid in pure kitchen-sinks without shops. (4) Currency rewards can coexist with MP14 material bridges on the same quest.
+
+**pack_types:** expert, hardcore, rpg
+**Phase:** Step 4 (node generation)
+**Source confidence:** multi-source (2 packs: GregTech-Odyssey, NFwC)
+
+---
+
+### MP37 — Progress Catalog Chapter (visual milestone tracker)
+
+**Applicable when:** the pack has many voltage tiers, tech stages, or milestone items, and the player needs a at-a-glance view of their overall progress. A dedicated chapter with no dependencies, no rewards, and all quests displayed as a visual catalog of every milestone item.
+
+**Implementation:** A chapter where every quest has: no `dependencies`, no `rewards`, `optional: true` **(mandatory — without this, catalog quests count toward chapter completion % and trigger PP4 Completionist's Dilemma)**, and a single `item` task for a milestone item (e.g. every circuit across all voltage tiers). The chapter is purely a visual tracker — the player can see which items they've produced and which remain. Quest titles label the tier/stage. The chapter icon is distinct (e.g. a progress-related item).
+
+**Mandatory fields checklist:**
+- `optional: true` — excludes quests from chapter completion percentage (PP4 prevention)
+- `dependencies: []` or omitted — catalog quests are always available
+- `rewards: []` or omitted — catalog is tracking only, no progression reward
+
+**Real case (GregTech-Odyssey, progress chapter):** A dedicated chapter listing all circuit items across all voltage tiers. No dependencies, no rewards. Serves as the player's visual progress map — "I've made LV circuits but not MV yet." Combined with the pack's 14 voltage-tier chapters, the progress chapter gives a bird's-eye view of the entire tech tree.
+
+**Design considerations:** (1) Progress catalog chapters are complementary to, not a replacement for, the main progression chapters. (2) All quests should be completable at any time (no gating) — the catalog reflects what the player HAS done, not what they CAN do. (3) Consider using a distinctive shape or color to differentiate catalog quests from progression quests. (4) Works best in expert packs with 10+ tiers/stages; overkill for kitchen-sinks with 3-4 stages.
+
+**pack_types:** expert
+**Phase:** Step 2 (chapter design)
+**Source confidence:** single-source (GregTech-Odyssey only)
+
+---
+
+### Case Study — Profession Chapter (TWR-specific, decomposable as MP7+MP10+MP18)
+
+> **Status:** Case study, not a generalizable micro-pattern. Observed only in TheWinterRescue. The design can be decomposed as MP7 (Fan-Out from tier gate to profession branches) + MP10 (Independent Island per profession chapter) + MP18 (Choice Reward at role selection). Use those patterns directly rather than referencing this case study.
+
+**Applicable when:** the pack has multiple playstyle paths (combat, farming, mining, research) and the author wants to give each role dedicated quest content. Each profession gets its own chapter with thematically appropriate tasks and rewards.
+
+**Implementation:** Multiple chapters, each named after a profession or role (e.g. "A Day of Hunter", "A Day of Farmer", "A Day of Miner"). Each chapter contains quests themed around that profession's activities. Profession chapters are typically optional side content, complementing the main tier-based progression. They may use distinct shapes, icons, or reward types to differentiate from main chapters.
+
+**Real case (TheWinterRescue):** 9 profession chapters: hunter, farmer, miner, researcher, fuel_engineer, generator_engineer, siberian_chef, tundra_traveller, craftsman. Each chapter provides thematic role-based content alongside the main tier chapters (t0-t3). Combined with the pack's 21-55% optional rate, profession chapters give players extensive non-linear exploration within tiers.
+
+**Design considerations:** (1) Profession chapters should be genuinely optional — never gate main progression behind them. (2) Each profession chapter should teach skills relevant to that role, not duplicate main-progression content. (3) Reward profession chapters with role-specific tools or materials, not generic items. (4) The number of profession chapters should reflect the pack's mod diversity — don't create 9 profession chapters if only 3 mods support distinct playstyles.
+
+**pack_types:** expert, story
+**Phase:** Step 2 (chapter design)
+**Source confidence:** single-source (TheWinterRescue only) — insufficient data for generalization; decomposable into MP7+MP10+MP18
 
 ---
 
@@ -699,6 +785,14 @@ Loot table rewards differ from standard item rewards (MP14, MP15) in that the ou
 | Enigmatica 10 | Expert | ~? | 4–5 types (est.) | ~1.3 (est.) | Deep chain (est.) | `default` (est.) | unknown — zero quest complaints on issue tracker |
 | Craftoria | Kitchen-sink | ~? | 5–7 types (est.) | ~1.2 (est.) | Fan-out + linear | `linear` (confirmed by #607) | xp_levels-heavy (AP17) |
 | FTB Skies 2 | Skyblock | ~? | 5+ types (est.) | ~1.2 (est.) | Deep chain | `default` (est.) | varies |
+| GregTech-Odyssey | Expert/GregTech | 40 ch | 6+ types (item, checkmark, structure, observation, dimension, kill) | ~2.0 | Deep chain (109 multi-dep in MV) | `default` | ~1.0/quest + currency |
+| No-Flesh-Within-Chest | Hardcore/combat | 18 ch | 5 types (item, checkmark, kill, structure, dimension) | ~1.5 | Linear chain + boss fan-out | `default` | ~0.85/quest + currency |
+| TheWinterRescue | Expert/survival | 15 ch | 3 types (item, checkmark, frostedheart:insight) | ~1.8 | Linear + profession branches | `default` | ~0.83/quest + insight |
+| Cabricality | Expert/Create | 14 ch | 2 types (item, checkmark) | ~1.1 | Linear + stage branching | `default` | ~0.59/quest (ZERO rewards on many) |
+| ATM-6 | Kitchen-sink | 25 ch | 6 types (item, checkmark, kill, dimension, observation, advancement) | ~1.4 | Fan-out (depth 3-5) | `flexible` | ~1.25/quest (xp+random dominant) |
+| Enigmatica 6 | Kitchen-sink | ~30 ch | 4 types (item, checkmark, kill, advancement) | ~1.7 | Fan-out + chain | `flexible` | ~0.63/quest (command-dominant: 455 cmd) |
+| All-of-Fabric-3 | Kitchen-sink (Fabric) | 23 ch | 4 types (item, checkmark, kill, advancement) | ~1.8 | Fan-out + linear | `flexible` | ~0.66/quest (random-dominant: 363) |
+| GreedyCraft | Kitchen-sink (multi-mode) | 3×15+ ch | 2 types (item, checkmark) sampled | ~1.0 | Unknown (JSON format) | varies | reward tickets + massive XP |
 
 ---
 
@@ -822,3 +916,126 @@ Packs with **issue-tracker player feedback data** (Cycle 3 Phase 2, no config ac
 16. **Enigmatica 10** (EnigmaticaModpacks/Enigmatica10, MC 1.21.1, NeoForge) — Expert pack. ~20 recent issues, ZERO quest design complaints. Negative evidence: effective QA process. https://github.com/EnigmaticaModpacks/Enigmatica10/issues
 17. **Monifactory** (Omicron-Industries/Monifactory, MC 1.20.1) — Expert/GregTech pack. ~10 quest-related issues: tutorialisation debt (#2359), Yeta Wrench description omission (#1545), quest typos (#2546), quest crash (#2598). Low complaint volume overall. https://github.com/Omicron-Industries/Monifactory/issues
 18. **Craftoria** (TeamAOF/Craftoria, MC 1.21.1, NeoForge) — Kitchen-sink pack. 8+ quest design issues: gating complaints (#231, #607, #352), xp_levels reward relativity (#289), NBT quest failure (#666), content requests (#440, #629). Richest new source for reward economy and gating issues. Uses `linear` progression mode (confirmed by #607). https://github.com/TeamAOF/Craftoria/issues
+
+Packs with **Cycle 6 Phase 1 config access** (GitHub raw data, quantitative analysis):
+
+19. **ATM-6** (AllTheMods/ATM-6, MC 1.16.5, Forge) — 25 chapters, ~1674 quests. Full SNBT access. Source: https://github.com/AllTheMods/ATM-6/tree/main/config/ftbquests/quests/chapters
+20. **Enigmatica 6** (EnigmaticaModpacks/Enigmatica6, MC 1.16.5, Forge) — 23+ chapters, ~858 quests sampled. Full SNBT access. Source: https://github.com/EnigmaticaModpacks/Enigmatica6/tree/main/config/ftbquests/quests/chapters
+21. **All-of-Fabric-3** (TeamAOF/All-of-Fabric-3, MC 1.16.5, Fabric) — 23 chapters, ~615 quests. Full SNBT access. Source: https://github.com/TeamAOF/All-of-Fabric-3/tree/main/config/ftbquests/quests/chapters
+22. **GreedyCraft** (TCreopargh/GreedyCraft, MC 1.12.2, Forge) — 3 quest modes × 15+ chapters. JSON format (not SNBT). Source: https://github.com/TCreopargh/GreedyCraft/tree/main/config/ftbquests
+
+---
+
+## Part 10: Cycle 7 Patterns (MP38) — Player Feedback Cross-Validation
+
+### MP38 — Reward Perception Split (kitchen-sink generosity debate)
+
+**Pattern:** In kitchen-sink packs with `flexible` progression mode, generous quest rewards (high-tier items, large XP, rare materials) create a **perception split** among players. One camp views generous rewards as progression-breaking inflation ("arbitrary progression steps are skipped for no reason"); the other views them as genre-appropriate design ("only giving away ATM Stars would truly ruin progression"). The split is rooted in different player expectations: players who approach kitchen-sinks as structured progression experiences (like expert packs) feel the rewards undermine the journey; players who approach them as sandbox toolboxes welcome the generous starting resources.
+
+**Applicable when:** designing reward economy for kitchen-sink packs. Expert packs with `linear`/`default` progression don't face this split because gating prevents early access regardless of rewards. The split only emerges in `flexible` mode where rewards can genuinely bypass intended progression paths.
+
+**Implementation要点:** (1) For kitchen-sinks with `flexible` mode, cap early-game quest rewards to materials the player would obtain within 1-2 hours of normal play — don't reward items that bypass multiple tiers of progression. (2) Reserve truly progression-breaking rewards (dimension-access items, endgame tools) for late-game capstone quests. (3) Use choice rewards (MP18) at key branch points so the player controls which progression path the reward supports, rather than receiving items that shortcut paths they haven't chosen. (4) Document the pack's reward philosophy in the quest book's introduction chapter so players know what to expect.
+
+**Real case (ATM-10 Discussion #3539):** Player xiaoxiao921 argues "the quest book gives way too many rewards that break balance" — specifically, early Dragon Eggs, Ender Chests, and Ultimate Universal Cables bypass intended progression. The mining dimension allows 3 players to craft ore sight charms for only 4 nuggets, circumventing allthemodium scarcity. The poster summarizes: "arbitrary progression steps being are skipped for no reason." Collaborator TheBedrockMaster disagrees: "because it is a kitchen sink pack, only giving away ATM Stars would truly ruin progression." This is the clearest documentation of the reward perception split in the dataset.
+
+**Verification source:** [AllTheMods/ATM-10 Discussion #3539](https://github.com/AllTheMods/ATM-10/discussions/3539), cesspit.net progression philosophy analysis
+
+**验证置信度**: 中等 — 单一 GitHub Discussion (ATM-10 #3539) + cesspit.net 理论支撑。需第二个 kitchen-sink 包的 reward debate 数据交叉验证。
+
+---
+
+### MP43 — NPC Questline Economy Gate (quest-unlock-trading pattern)
+
+**Pattern:** The pack provides NPCs (non-player characters) with individual backstories and questlines. Completing an NPC's questline unlocks access to that NPC's trading functions, creating a quest-gated economy. The player must invest time in quest completion before gaining access to economic resources, turning quest progress into an economic currency. This creates a dual-purpose quest system: quests provide both progression guidance AND economic access.
+
+**Applicable when:** designing packs with NPC-based economy or trading systems. The pattern is most effective when (1) NPCs offer items that are difficult or impossible to obtain through crafting alone, (2) NPC quests are thematically connected to their trading inventory, and (3) the quest-to-trade unlock creates a natural progression flow rather than an arbitrary gate.
+
+**Implementation要点:** (1) Each NPC should have a distinct personality and backstory expressed through quest descriptions — this transforms economic gates into narrative experiences. (2) Quest requirements should thematically match the NPC's specialty (e.g., a blacksmith NPC requires metalworking items). (3) The trading inventory should scale with quest completion — early quests unlock basic trades, later quests unlock advanced items. (4) Use FTB Quests `command` rewards to trigger NPC unlock scripts via KubeJS or Game Stages. (5) Ensure at least one NPC is accessible from the start to provide an early-game economic lifeline.
+
+**Real case (DeceasedCraft):** 8+ NPCs with independent backstories and questlines. Completing an NPC's questline unlocks their trading functions ("完成任务即可解锁贸易功能"). The NPC system is integrated with the pack's zombie apocalypse theme — NPCs are survivors who trade essential supplies in exchange for quest completion proving the player's capability.
+
+**Verification source:** [MC百科 modpack/409343](https://www.mcmod.cn/modpack/diff/0-409343.html) (DeceasedCraft), [mcshuo.com/resource/515](https://www.mcshuo.com/resource/515)
+
+**验证置信度**: 低 — 单一来源 (DeceasedCraft)，无玩家反馈验证。需第二个 NPC questline 包交叉验证。
+
+---
+
+### MP44 — XP Investment Feedback Loop (quest-XP-skill tree cycle)
+
+**Pattern:** Quest XP rewards feed into a custom skill tree or attribute system that enhances the player's capabilities. This creates a positive feedback loop: completing quests → earning XP → investing in skills → gaining power → completing harder quests → earning more XP. The XP serves dual purpose: vanilla level progression AND custom skill investment. This transforms XP from a throwaway reward (MP16 XP Drip) into a strategic resource that the player actively manages.
+
+**Applicable when:** the pack includes a custom skill tree, attribute system, or XP-based progression mechanic. The pattern requires (1) a meaningful skill tree with impactful choices, (2) quest XP rewards that are a significant portion of total XP income, and (3) skills that tangibly affect gameplay (not just cosmetic bonuses).
+
+**Implementation要点:** (1) Balance quest XP rewards so that quest completion provides ~30-50% of total XP income — enough to matter but not enough to make natural gameplay XP irrelevant. (2) Design the skill tree with meaningful branching choices that align with different playstyles (combat, crafting, exploration). (3) Use `xp_levels` reward type (not raw XP) for larger milestone rewards, and raw `xp` for incremental drip rewards. (4) Ensure the first few skill tree nodes are reachable within the first 1-2 hours of play to establish the feedback loop early. (5) AP17 (XP-Level Relativity) applies — ensure XP reward amounts remain meaningful across the full progression curve.
+
+**Real case (DeceasedCraft + RAD3):** DeceasedCraft features a "自定义技能树以匹配多种战斗风格" (custom skill tree for various combat styles) where XP from quests feeds character development. Players use "经验值升级强化角色" (XP to level up and strengthen the character). RAD3 has a "被动技能树" (passive skill tree) for attribute enhancement alongside its 7545 quests. Both packs create XP-as-investment rather than XP-as-drip-reward.
+
+**Verification source:** [mcshuo.com/resource/515](https://www.mcshuo.com/resource/515) (DeceasedCraft), [MC百科 modpack/1090](https://www.mcmod.cn/modpack/1090.html) (RAD3)
+
+**验证置信度**: 低 — 2 个来源 (DeceasedCraft + RAD3)，均无玩家反馈验证。XP→skill tree 循环的概念在 RPG 游戏中普遍存在，但在 FTB Quests 整合包中作为设计模式的验证尚不充分。
+
+---
+
+### MP45 — Bilingual Quest Authoring (dual-language quest content)
+
+**Pattern:** The pack's quest descriptions are authored in two languages simultaneously (typically the author's native language + English), rather than being translated after the fact. This ensures both language versions are first-class content, not afterthoughts. The bilingual approach expands the pack's potential audience while maintaining quality in both languages. This is distinct from community-driven translation patches (which are MP45-adjacent but not the same pattern).
+
+**Applicable when:** the pack author is bilingual or has a bilingual team, and targets both a native-language community and the international English-speaking community. The pattern is most valuable for packs with deep recipe modifications (like KubeJS expert packs) where accurate quest descriptions are critical — machine translation of complex mod terminology produces poor results.
+
+**Implementation要点:** (1) Use FTB Quests' built-in i18n support with `translation_key` fields rather than hardcoded bilingual text in descriptions. (2) Maintain parallel language files (e.g., `zh_cn.json` and `en_us.json`) with the same key structure. (3) Author both languages simultaneously during quest creation, not as a post-hoc translation pass — this catches terminology issues early. (4) For mod-specific terminology, create a shared glossary that both language versions reference. (5) Test both language versions with native speakers — bilingual authors may miss subtle issues in their weaker language. (6) GTM Community Pack #99 shows the demand: a Japanese translator requested i18n keys for quest descriptions, indicating the pack lacked translation infrastructure.
+
+**Real case (Tree of Life + Path of Truth):** Tree of Life explicitly supports "语言支持：简体中文（zh_cn）、英语（en_us，测试中）" with English still in testing phase. Path of Truth has bilingual content reflecting its Chinese authorship and international aspirations. Both packs are Chinese-authored expert packs where accurate quest descriptions are essential due to deep recipe modifications.
+
+**Verification source:** [MC百科 modpack/1272](https://www.mcmod.cn/modpack/1272.html) (Tree of Life), [MC百科 modpack/826](https://www.mcmod.cn/modpack/826.html) (Path of Truth), [GregTechCEu/GTCP-Modern #99](https://github.com/GregTechCEu/GregTech-Modern-Community-Pack/issues/99) (i18n demand)
+
+**验证置信度**: 低 — 2 个来源 (Tree of Life + Path of Truth)，均为中国作者包，无玩家反馈验证。i18n 需求在 GTM #99 中被间接验证。
+
+---
+
+## Cycle 7 — Player Feedback Cross-Validation Summary
+
+The following table summarizes which patterns from the 33-pack dataset received validation, challenge, or remained untested from Cycle 7 player feedback research.
+
+### Patterns validated by player feedback
+
+| Pattern | Validation evidence | Source |
+|---|---|---|
+| AP1 Description-Reality Mismatch | Monifactory #2359 (description omissions for GT covers, Smart Item Filter, Lossless Cables), E10 "MI quest description issue" | Monifactory, E10 issue trackers |
+| AP4 Wrong Gating | Craftoria #231 (Powah), #607 (Iron's Spells, "should use flexible instead of linear"), #352 (optional-but-mandatory) | Craftoria issue tracker |
+| AP5 Empty Quest Description | Monifactory #2359 (Aqueous Accumulator confusion, "spend way more time than needed, only to realise like 30 minutes later") | Monifactory issue tracker |
+| AP8 Reward Inflation | ATM-10 #3539 (Dragon Egg, Ender Chests, Ultimate Cables "break balance") — validates inflation IS a player concern in kitchen-sinks | ATM-10 discussion |
+| AP17 XP-Level Relativity | Craftoria #289 — detailed analysis of dozens of quests, "+3 XP Levels can range from 27 to many thousands" | Craftoria issue tracker |
+| AP18 Reward Desert | Craftoria #231 — "go through 3 tiers of reactors with no relevant quest rewards, inconsistent with other progression" | Craftoria issue tracker |
+| MP6 Linear Chain | Craftoria #231 player explicitly requests "restructure to be more linear" for learnability — validates linear chains as pedagogical tool | Craftoria issue tracker |
+| MP14 Material Bridge | Indirectly validated — reward deserts (AP18) called out specifically when material bridges are missing | Craftoria #231 |
+| MP16 XP Drip | Indirectly validated — xp_levels inconsistency (AP17) called out as contrast to consistent XP rewards | Craftoria #289 |
+| MP23 Invisible Infrastructure | Monifactory invisible routing works well — player complaints are about visible tutorialisation, NOT invisible infrastructure | Monifactory #2359 |
+| cesspit.net "Backward Shortcut" (PP2) | Re-validated: "unlock backward-facing shortcuts that let you optimize what you've done" described as core expert pack satisfaction | cesspit.net |
+
+### Patterns challenged or corrected by player feedback
+
+| Pattern | Challenge | Correction |
+|---|---|---|
+| Enigmatica 10 "zero quest complaints" | E10 actually has ~6 quest issues (Mekanism progression blocker, Occultism candle/chalice acceptance, wrong rewards, MI description) | Previous research overstated E10's cleanliness. Complaint volume is still lower than comparable packs, but "zero" was inaccurate. |
+| AP8 "always bad" assumption | ATM-10 collaborator defends generous rewards as genre-appropriate for kitchen-sinks | AP8 severity depends on pack type and progression mode. In `flexible` kitchen-sinks, generosity is debated; in `linear` expert packs, it's unambiguously harmful. |
+| "optional: true" as safe flag | Craftoria #352 shows optional-marked quests can be hard prerequisites | R7 (Optional-Gate-Mandatory) already detects this; AP19 now documents the player-experience dimension. |
+
+### Patterns not yet validated from player perspective
+
+| Pattern | Reason |
+|---|---|
+| or_tasks: true (flexible task completion) | No player discussions found about this mechanic |
+| dependency-linked images (Prominence II) | Visual presentation rarely discussed in text-based feedback |
+| Stage-based architecture (ModularTech) | ModularTech not widely discussed in player communities |
+| hide_dependency_lines impact | Players discuss visual clutter indirectly (AP20) but don't reference the specific flag |
+| Blessed-Or-Cursed zero-reward design | Pack has minimal community visibility (14 GitHub stars) |
+| MP35 Dual-Task Automation (Cabricality) | Remains single-source from Cycle 6; no player feedback found |
+
+### Player feedback priority ranking (by discussion frequency)
+
+1. **Reward economy** (most discussed) — AP8, AP17, AP18, MP38 all validated from player reports
+2. **Gating/progression blocking** — AP4, AP19 heavily reported in Craftoria
+3. **Tutorial quality** — AP5 validated in Monifactory, the highest-quality expert pack
+4. **Item acceptance bugs** (AP1 variant) — E10, Monifactory
+5. **Visual presentation** — AP20 only one report (Craftoria Powah)
+6. **Dependency visualization** — not directly discussed by players

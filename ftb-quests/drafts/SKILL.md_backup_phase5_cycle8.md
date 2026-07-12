@@ -184,7 +184,7 @@ Most real books layer these: a Linear Chapter 1, then Parallel-mod-lines for the
 5. **Reward philosophy + pacing up front.** Pick guide-first (roadmap, minimal rewards — Divine Journey 2 / Create: Astral) vs reward-driven (generous — ATM) and commit (lesson 2 / `reference/design/reward-economy.md`). Pacing follows the difficulty curve (`reference/design/difficulty-curve.md`): tutorial → early (16–64 stacks) → mid (1–2 hr bottlenecks) → late (multi-blocks, bosses) → endgame; every ~3rd quest an alternative path.
 6. **`progression_mode` is a per-chapter switch**: `default` (quest locks until dep done — strict order) vs `flexible` (any order, deps hide not lock). ATM ships `flexible` (issue #1136) so passive tasks (advancements/stats/biome visits) count; use `default` when order *is* the lesson.
 
-**Micro-level authoring patterns** — the 34 micro-patterns are distributed across the modular reference files: task combination formulas (MP1–MP5) in `reference/design/mod-item-reachability.md`, dependency topologies (MP6–MP10) in `reference/design/mod-dependency-graph.md`, quest-internal pacing (MP11–MP13) and stage marking (MP19–MP23) in `reference/design/mod-teaching-pacing.md`, reward bridging (MP14–MP18) in `reference/design/mod-reward-design.md`. Load `mod-item-reachability` and `mod-reward-design` before Step 4 node generation; load `mod-dependency-graph` and `mod-teaching-pacing` before Step 2 outline design. See `reference/design/module-index.md` for the full routing table. For topology-aware layout rules (R55–R64), coordinate algorithms, and real case data from 13 chapters across 9 packs, load `reference/design/topology-coordinates.md` and `reference/design/progression-rules.md` §Section B.
+**Micro-level authoring patterns** — the 34 micro-patterns are distributed across the modular reference files: task combination formulas (MP1–MP5) in `reference/design/mod-item-reachability.md`, dependency topologies (MP6–MP10) in `reference/design/mod-dependency-graph.md`, quest-internal pacing (MP11–MP13) and stage marking (MP19–MP23) in `reference/design/mod-teaching-pacing.md`, reward bridging (MP14–MP18) in `reference/design/mod-reward-design.md`. Load `mod-item-reachability` and `mod-reward-design` before Step 4 node generation; load `mod-dependency-graph` and `mod-teaching-pacing` before Step 2 outline design. See `reference/design/module-index.md` for the full routing table.
 
 **Linear vs nonlinear — the dependency wiring:**
 - **Linear:** `dependency_requirement: "all"`, each quest depends on the prior — one path, no choices. Good for teaching a forced sequence.
@@ -271,41 +271,8 @@ Work the branches in dependency order:
   - Capstone convergence — one endgame node the whole book converges on (ATM Star / Gregstar style)? (recommend: yes for ATM-series). The capstone chapter is **self-contained** (model: Design principles F1/F2).
   - Non-kitchen-sink endgame — linear/expert packs end on a final boss or goal quest, not a convergence capstone; don't force one onto a pack without a convergence shape.
   Evidence: see `reference/design/design-guide.md §field-findings` (ATM9/ATM10).
-- **Topology selection — MANDATORY:** "你希望这个 chapter 使用什么布局拓扑？" Seven options (load `reference/design/topology-coordinates.md` §Phase 2 for visual examples):
-  - **linear_chain** — 深度线性链（教程章、单 mod 配方链）
-  - **hub_fan** — 中心 hub 辐射分支（多子系统 mod 如 Mekanism）
-  - **parallel_columns** — 并行纵列（赏金板、多材料并行升级）
-  - **diamond_convergence** — 菱形汇聚（多路线汇聚到 capstone）
-  - **tree_branching** — 树状分支（大型专家包主进度线）
-  - **grid_catalog** — 网格目录（里程碑/成就收集章）
-  - **highway_branch** — 水平主干+垂直分支（多结构 mod 如 Botania）
-  Ask per-chapter, not per-book — different chapters in the same pack typically use different topologies. Recommend based on the chapter's content structure: a mod with N sub-systems → hub_fan; a linear upgrade path → linear_chain; a collection trophy case → grid_catalog. The topology choice drives coordinate assignment in Step 3 and validation rules in Step 5.
 - **Rewards & difficulty:** reward philosophy (generous items vs cosmetic/lore), `consume_items` philosophy, special reward types (commands / loot tables / XP), expert/hardcore gating.
   - **Dominant reward type (审查 C 补充):** If the pack uses reward tables (`random`/`loot`/`choice`), settle the dominant type here — one pack, one dominant presentation style. Craftoria uses `random` (auto-roll), E10 uses `loot` (loot crate), MI:Foundation uses `item` (deterministic). Mixing is allowed but should be deliberate, not accidental (R34 reports the distribution). Ask: "你的整合包偏好哪种奖励呈现方式？自动抽取 (random)、战利品箱 (loot)、还是玩家选择 (choice)？" with the recommendation based on pack genre.
-- **Questbook role (R46) — MANDATORY:** "你的任务书主要扮演什么角色？" Four options:
-  - **伴生导航 (companion)** — 任务书给方向，EMI/field guide 给细节（如 TFG Modern）
-  - **教程系统 (tutorial)** — 任务书是主要教学工具（如 Monifactory、E9E）
-  - **激励目录 (incentive_catalog)** — 任务书主要发奖励驱动玩家（如 ATM 系列）
-  - **混合模式 (hybrid)** — 不同章节扮演不同角色（如 ATM-10 大部分是激励目录，某些章节充当教程）。If hybrid, ask which chapters use which role.
-  This declaration determines R47 and R50 applicability downstream.
-- **Collection-catalog check (R49) — CONDITIONAL:** When the user mentions collection/catalog chapters during structure discussion, ask: "这个 catalog 涵盖哪些 mod？这些 mod 的内容是否已稳定，还是仍在频繁更新？" If > 3 actively developed mods or estimated > 200 quests, warn about maintenance cost and recommend: (a) limiting scope to stable-content mods, (b) using tag-based tasks (`itemfilters:tag` or `ftbfiltersystem:smart_filter`) that auto-include new items, or (c) splitting into smaller sub-chapters.
-- **Zero-reward safety (R50) — CONDITIONAL:** When the user indicates zero or near-zero reward design, confirm 3 safety conditions:
-  1. "是否有替代进度货币？" (voltage tiers, badges, skill systems, Game Stages, achievement unlocks). **If the user doesn't know, proactively suggest alternatives** based on the pack's mod list — e.g. "你的包有 Game Stages，可以用 stage 解锁作为进度货币" or "GregTech 包天然有电压等级作为进度标志".
-  2. "任务书角色是否为 companion 或 catalog？" (from R46)
-  3. "包是否有强内在游戏循环？" (crafting/collection/combat/exploration)
-  All three must be yes for safe zero-reward design. If any condition fails, recommend adding at least minimal XP or cosmetic rewards.
-- **Stage definitions（阶段定义收集）：** When the pack type is expert, story, or skyblock, the following questions are mandatory; kitchen-sink packs may ask optionally:
-  1. **Stage division（stage_map skeleton）：** "你的整合包有明确的阶段划分吗？例如'石器→铁器→钻石→下界→末地'或'ULV→LV→MV→HV→EV'？请列出阶段名称和顺序。"
-  2. **Stage key resources（stage_available_resources）：** "每个阶段有哪些关键可获得资源？请每阶段列出 5–10 个代表性物品 ID。"
-  3. **Game Stages integration（if applicable）：** "你的包是否使用 Game Stages 或类似的阶段锁定模组？如果是，请提供 stage name 列表及其解锁的内容摘要（物品/维度/配方）。"
-
-  Collected data serves as L2-level data source for the following rules:
-  - R42（Stage-Internal Item Reachability）：use `stage_available_resources` to check whether crafting-chain leaf nodes fall within the current stage's reachable resource set.
-  - R44（Reward-Stage Matching）：use `stage_map` to judge whether a reward item skips stages.
-  - R43（Stage-Quest Causal Chain Acyclic）：use the stage→quest mapping to detect Stage-Quest cross-cycles.
-  - R4（Stage Boundary）：use stage definitions to judge whether items are placed in the correct stage range.
-
-  If the user does not provide L2 data, the above rules degrade to L1 heuristic or INFO-level reporting.
 - **Linkage (only if Step 1 found existing quests):** how does the new content connect to the pack's existing quests? Grill one question at a time, codebase-first — show what the index found before asking. Branches:
   - Gate after — should new quests require completing an existing quest first? (recommend: yes, if the new chapter uses mods the existing book unlocks)
   - Reward from — should completing existing quests reward into the new line, or vice versa? (recommend: only if the two share a progression resource)
@@ -367,17 +334,6 @@ Get an explicit "yes" (or edits) before Step 3. If the user changes the arc late
 Turn the approved outline into a **skeleton spec**: every node becomes a quest with `name`, `depends_on`, `shape`, and **empty** `tasks: []` / `rewards: []`. Add title-only lang (chapter + quest titles; descriptions come in Step 4). Generate it so the bare tree appears in-game — the user walks the spine and confirms structure before any task is written.
 
 Layout (the generator's `auto` layout follows the same convention): main path left-to-right (`x` +1.0/step, `y` flat), side branches offset (`y` ±1.0), spacing ~1.0, `size: 1.0`. Shapes: main = `circle`, optional = `square`, boss/key = `hexagon`/`diamond`. Wire `dependencies` by `name`; default `dependency_requirement: "all"` (`"one"` for choose-N).
-
-**Topology-aware layout (Cycle 11):** If a topology was selected in Step 2, read `reference/design/topology-coordinates.md` §Phase 3 to choose the coordinate assignment strategy matching the topology type. Use the constraint formulas (spacing, hub radius, column gap) from §Layer 2 to calculate initial coordinates. Key formulas by topology:
-  - linear_chain: `y_spacing = clamp(1.5 * density_factor, 1.0, 2.5)` with optional x-zigzag
-  - hub_fan: `hub_radius = clamp(3.0 + fan_out * 0.4 + max_leaves * 0.5, 3.5, 8.0)` — note the 31% deviation from original formula when sub-hubs have leaves
-  - parallel_columns: `column_x_gap = clamp(2.0 + width * 0.5, 2.0, 4.0)`
-  - highway_branch: x-spine at 2.0 spacing, branches at 1.5 vertical offset
-  - grid_catalog: `columns = ceil(sqrt(quest_count))`, 1.5×2.5 spacing
-  - tree_branching: recursive subtree layout with `total_width=16.0`
-  - diamond_convergence: sin-curve spread `x_spread = 3.0 + path_length * 0.5`
-
-Do NOT attempt collision detection during scaffold — that is reserved for R58 validation in Step 5.
 
 IDs are computed automatically by the generator from quest names — you write `name: "punch_wood"`, it owns the 16-hex ID (formula in reference §9; uniqueness is guaranteed pre-emit, see Step 4). Renaming a quest without `--mode ask` creates a new ID and breaks player progress; `reconcile_renames` maps old → new and preserves the original ID via the manifest's `aliases`.
 
@@ -443,14 +399,6 @@ For each node:
    | **R2 Tool tier** | Look up `BUILTIN_TOOL_TIER_MAP` + `BUILTIN_ORE_REQUIREMENTS`. If the required tool/mining level exceeds what ancestors provide → **GATE FAIL: P2 cross-tier**. Stop and surface to user. | Reason from the mod's known tool progression. If unsure → mark `[unverified:tool_tier]` and continue. |
    | **R3 Recipe depth** | Run `estimate_recipe_depth_heuristic` on the item id. If estimated depth > quest dependency depth + 2 → **GATE FAIL: P2 depth mismatch**. Mark `[unverified:recipe_depth]` and surface. | Use **name-tier heuristic** as fallback: items containing `ingot`/`dust`/`gear`/`nugget` ≈ depth 1–2; `machine`/`circuit`/`processor`/`controller` ≈ depth 3–4; `multiblock`/`fusion`/`singularity` ≈ depth 5+. Mark `[unverified:recipe_depth]`. |
 
-   **R42 Stage-Internal Item Reachability (additional check):** After the three checks above, each task item must additionally answer:
-
-   > 玩家此刻怎么拿到这个？——引用 `reference/design/mod-item-reachability.md` R42（Stage-Internal Item Reachability）
-
-   If the pack has L2 stage data (the `stage_map` and `stage_available_resources` collected in Step 2), check whether the item's crafting-chain leaf nodes fall within the current stage's reachable resource set. If no L2 data is available, fall back to the R1 (dimension) + R4 (stage boundary) L1 heuristic combination, and mark `[unverified:stage_recipe]`.
-
-   Note: this is a semantic reinforcement of Gate 1, not a change to its pass/fail logic. Gate 1 already implicitly covers R1/R2/R3; this extension explicitly adds the R42 stage-internal resource reachability perspective.
-
    **Gate verdict:**
    - **PASS** (all checks pass or are deferred `[unverified]`) → write the task to the spec.
    - **FAIL** (any L1 hit returns P1/P2 violation) → do NOT write the task. Instead: (a) suggest an alternative item the player CAN reach, (b) suggest adjusting the dependency chain to unlock the required dimension/tool, or (c) ask the user to confirm they want this item here despite the gap. Only proceed with explicit user approval, and note the override in the spec comment: `// Gate 1 override: user confirmed [item] despite [reason]`.
@@ -474,14 +422,6 @@ For each node:
    | **Terminal reward** | This quest is a capstone, chapter leaf, or otherwise has no dependent quests in the outline. The reward is the endpoint, not a bridge. | **PASS** — write to spec. Mark explicitly: `// Gate 2: terminal reward (no dependents)`. |
    | **Dead-end risk (AP6)** | The reward is a material item, no dependent quest requires it as a task, and it isn't a universal bridge type or terminal. | **GATE FAIL** — do NOT write to spec. Instead: (a) redesign the reward as a material bridge to a downstream quest, (b) add a dependent quest that uses this item, or (c) if the user insists on keeping it, mark `[unverified:reward_bridge]` and note the override: `// Gate 2 override: user accepted dead-end reward`. |
 
-   **R45 Reward Guidance Bridging (additional check — chapter-level):** After the four categories above, each reward must additionally answer:
-
-   > 这个奖励引导玩家去做什么？——引用 `reference/design/mod-reward-design.md` R45（Reward Guidance Bridging）
-
-   If the current quest is the chapter's capstone (the quest with the most dependents), check whether its reward includes an item or gamestage unlock needed by the next chapter's entry quest (a virtual bridge item). If the reward bridges neither an item nor a stage, flag it as a chapter-level dead-end risk.
-
-   Note: this is a semantic reinforcement of Gate 2. Gate 2 already checks reward bridging at the quest level (R10); this extension raises the perspective to the chapter level (R45), ensuring chapter-to-chapter transitions have explicit reward guidance.
-
    **Backward matching (Step 4 practical note):** because Step 4 generates in dependency order (root → leaves), you often can't do a forward check (reward → dependent task) since dependent quests may not exist yet. Use **backward matching** instead: when generating quest B, check whether B's task items match any ancestor quest's rewards. The formal forward check runs in Step 5 (R10).
 
    **R28 Command reward safety (sub-gate):** if the reward type is `command`, this gate additionally requires passing the R28 Command Reward Safety Scan before writing — check against `FORBIDDEN_COMMANDS` (ERROR — block write), `HIGH_RISK_COMMANDS` (WARNING — surface to user), and `IDEMPOTENCY_RISK` (INFO — note). See `reference/design/mod-reward-design.md §R28`. Command rewards are the highest-risk reward type (AP15) — prefer `item`, `xp`, `loot` whenever possible.
@@ -504,7 +444,6 @@ For each node:
    - **Description-item consistency (R23).** Does the `quest_desc` mention any item ID that doesn't appear in this quest's tasks or rewards? Conversely, does the description fail to explain a task item that the player needs context for? The static rule in `reference/design/mod-description-trust.md` catches ID-level mismatches; at generation time, read the description you just wrote and confirm every named item matches the config, and every config item has a reason to be there.
    - **Style drift (AP10).** Compare this quest's description structure to the last 2–3 quests you polished. Are they all following the same template ("Obtain [item]. This is needed for [next step].")? Vary the description mode — how-to, lore, tip, challenge — so the chapter doesn't read like a form letter. Reward amounts and shape vocabulary should vary too (`reference/design/mod-description-trust.md §AP10` for detection heuristics).
    - **Narrative continuity (AP11).** If this quest's description makes a forward reference ("you'll need this for the next quest") or a difficulty claim ("the hardest craft so far"), verify the referenced quest actually exists and matches. Check that the tone (casual / technical / lore-heavy) is consistent with the chapter's established voice — a tonal lurch between adjacent quests breaks the player's trust in the book as a guide.
-   - **Companion delegation (R47).** If `questbook_role == "companion"` and the description contains recipe patterns ("X + Y → Z", "put X in Y", "smelt X to get Y"), note as INFO — consider delegating recipe details to EMI/JEI. Reverse: if `questbook_role == "tutorial"` and the description says "check EMI/JEI for the recipe" or similar delegation language, flag as WARNING — tutorial mode should teach, not delegate to external tools.
 
    **Reasoning Gate 3: Dependency Chain Sanity** — *lightweight scan after the per-node anti-pattern checks pass.*
 
@@ -518,12 +457,6 @@ For each node:
    | **Diamond rejoin** | This quest depends on multiple quests that themselves share a common ancestor (rejoin after fan-out) | **INFO** — note: "Diamond pattern detected. Verify `dependency_requirement` is correct (`all` = must do all branches, `one` = any branch suffices)." |
 
    Gate 3 is **advisory, not blocking** — it surfaces structural observations in the step 7 summary for the user to decide. Unlike Gates 1 and 2, it does not prevent writing to the spec. The formal versions of these checks (R5, R6, R7, R9) run in Step 5 with the full graph available.
-
-   **Topology layout check (per chapter, after all nodes are polished):** Load `reference/design/progression-rules.md` §Section B and check R55–R64 for the chapter's chosen topology. Priority checks:
-   - **R55** Topology-Progression Mode Alignment — does the chapter's `progression_mode` match the topology? Note the R41 early-game override: tutorial chapters (depth ≤ 3, ≤ 15 quests) may use `flexible` with `linear_chain` without triggering a warning.
-   - **R57** Hub Node Size Dominance — if hub_fan or tree_branching, verify hub size > max child size.
-   - **R60** Topology-Shape Vocabulary Coherence — shape count within the topology's guideline range.
-   These are advisory at generation time (Step 4); the formal checks run in Step 5.
 
 7. **Show a focused summary** of just that quest (id, tasks, rewards, lang title/desc) and ask: keep & continue, or revise? Only advance to the next node when the user is happy with this one.
 
@@ -558,25 +491,6 @@ If the script is unavailable, see reference §15 for the full diagnostics catalo
 
 The whole-book validation runs the full progression-rules pipeline (R1–R32, distributed across the modular reference files — see `reference/design/module-index.md` for routing) — item reachability across the complete dependency graph, reward continuity across all chapters, teaching order for every chapter, description consistency for every quest, command safety, team progression consistency, and chapter-level QA heuristics. The Step 4 per-node checks are a generation-time subset; Step 5 catches cross-quest and cross-chapter issues that only become visible once the full graph exists.
 
-**Topology validation (R55–R64 — Cycle 11 addition):** After the core R1–R32 pipeline, run the topology-aware layout rules from `reference/design/progression-rules.md` §Section B. Load `reference/design/topology-coordinates.md` for the classification algorithm and coordinate data. Execution order:
-  1. **R58** (P0) Collision-Free Adjacent Nodes — all-pairs distance check. This is the primary layout invariant; overlapping quests are the most basic layout failure.
-  2. **R55** (P1) Topology-Progression Mode Alignment — verify each chapter's topology matches its progression_mode. Apply R41 override for early-game chapters.
-  3. **R56** (P1) Depth-Axis Monotonicity — deeper quests should appear further along the primary axis.
-  4. **R59** (P1) Bounding Box Viewport Fit — chapter fits within 35×30 unit viewport.
-  5. **R61** (P1) Convergence Point Visual Prominence — convergence nodes at visual terminus.
-  6. **R57** (P2) Hub Node Size Dominance — hub size hierarchy.
-  7. **R62** (P2) Parallel Column Spacing Uniformity.
-  8. **R63** (P2) Grid Catalog Aspect Ratio.
-  9. **R64** (P2) Decorative Image Topology Alignment.
-  10. **R60** (P3) Topology-Shape Vocabulary Coherence.
-
-Print topology validation results as part of the summary:
-```
-Topology validation: {pass/warn/error}
-   Chapters checked: {N} | Topology types: {list}
-   R58 collisions: {count} | R55 alignment: {count} | R59 viewport: {count}
-```
-
 > **Dev testing — scope it.** When you change skill code (scripts/, ftbq/) during a session, avoid running the full test suite on every iteration. Run only the test module(s) that cover what you touched — see the "Test → source map" in `CONTRIBUTING.md`. Reserve the full suite for pre-push / pre-release / shared-surface changes (the JSON5 parser, the canonical emitter, the `generate()` signature).
 
 Then print a summary (in the user's language — see "Language — match the user"):
@@ -589,38 +503,6 @@ Then print a summary (in the user's language — see "Language — match the use
                   (merges additive files, backs up overwritten originals — see Step 5b)
    then in-game /ftbquests editing_mode
    If titles appear blank: you're on the inline-text (older .snbt) version — see reference §12.
-```
-
-**Questbook role stats (R46) — always print after summary:**
-```
-📖 Questbook role: {declared_role}
-📊 Reward density: {total_rewards / total_quests}
-📋 Optional rate: {optional / total}
-⚠️ Role consistency: {consistent/inconsistent — flag if reward_density contradicts declared role}
-```
-
-**Port drift indicators (R48) — print only when detected:**
-```
-🔀 Suspected ported quests: {count}
-   - Foreign mod references in descriptions: {n}
-   - Item namespaces not in modlist: {n}
-   - Reward distribution outliers (>2σ from R34): {n}
-   Review recommended before release.
-```
-
-**Catalog maintenance (R49) — print only when any chapter has >200 quests:**
-```
-📦 Large catalog chapter "{name}": {n} quests covering {m} mods
-   Maintenance risk: {low/moderate/high} — consider tag-based tasks for auto-inclusion
-```
-
-**Zero-reward safety (R50) — print only when reward_density < 0.05:**
-```
-🚫 Zero/near-zero reward design detected.
-   ☐ Alternative progression currency: {yes/no — list if yes}
-   ☐ Questbook role: {companion/catalog/other}
-   ☐ Strong intrinsic gameplay loop: {yes/no — list type}
-   Result: {SAFE / WARNING — missing conditions: ...}
 ```
 
 **Balance review (optional):** after the summary, offer to re-grill the user about pacing against the generated config — early quests too trivial/grindy? (recommend 3-5 min/quest first hour); rewards scale with effort? (~2× time-value); choke points? (every 3rd quest an alternative path); mod progression natural? (unlock when players want them).

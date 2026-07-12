@@ -15,6 +15,7 @@
 | AP12–AP13 | 任务系统机制缺陷 | Step 4 (node generation) | 逐节点生成时参考 |
 | AP14–AP16 | 系统安全与兼容性 | Step 4 (node generation) | 逐节点生成时参考 |
 | AP17–AP18 | Reward 经济与进度模式缺陷 | Step 2 (outline) / Step 4 | 规划阶段 + 生成时参考 |
+| AP19–AP20 | Quest 门控与呈现缺陷 (Gating & Presentation) | Step 2 / Step 4 | 规划阶段 + 生成时参考 |
 | Sources | 数据来源 | — | 参考 |
 
 > **注意：** anti-patterns.md 定位为「WHY」——解释每个错误的后果和成因。可执行的「HOW」（检测逻辑）在 `progression-rules.md` 中。Step 2 加载 AP1–AP8 和 AP17–AP18（reward 经济与进度模式）作为背景知识；Step 4 生成时重点参考 AP9–AP13（AI 生成专属风险和任务系统机制缺陷）以及 AP14–AP16（系统安全与兼容性风险）。
@@ -436,6 +437,84 @@ These anti-patterns address systemic reward design failures that emerge from the
 
 ---
 
+---
+
+## Quest Gating & Presentation Anti-Patterns (AP19–AP20)
+
+These anti-patterns emerge from Cycle 7 player feedback cross-validation, specifically from Craftoria and ATM-10 community discussions. They address gating mislabeling and presentation overload — problems that don't manifest as broken configs but as player confusion and frustration.
+
+### AP19 — Optional-but-Mandatory Mislabel (the dishonest optional flag)
+
+**Symptom:** A quest is marked `optional: true` but appears as a dependency for non-optional quests on both sides of the questline. The player sees the "optional" badge and skips the quest, only to discover later that mandatory content is locked behind it. Alternatively, the player completes the "optional" quest and realizes it was never truly optional — the UI misled them.
+
+**Root cause:** The quest author set `optional: true` to make the quest appear less intimidating or to signal "this is a side activity," but other quests in the dependency graph reference it as a hard prerequisite. In FTB Quests config terms, `optional: true` is a display flag — it does NOT remove the quest from dependency resolution. A dependent quest with `dependency_requirement: "all"` still requires the optional-marked quest to be completed.
+
+**Consequence:** Players who skip "optional" content find themselves hardlocked from mandatory progression. The quest book's trust contract (PP1) is violated not by wrong descriptions (AP1) but by wrong metadata — the UI says "optional" but the dependency graph says "mandatory." This is particularly confusing in `linear` mode where all locked quests appear grayed out regardless of optionality.
+
+**Fix:** (1) If a quest is a dependency for ANY non-optional quest, it must NOT be marked `optional: true`. (2) Run R7 (Optional-Gate-Mandatory check) to detect this automatically. (3) If the quest is genuinely optional (no mandatory content depends on it), the `optional: true` flag is correct. (4) For "optional-but-recommended" content, use quest description text to signal importance rather than the optional flag.
+
+**Real case (Craftoria #352):** A Mekanism "free runners" quest is marked `optional: true` but has "dependencies on both sides of the questline." The reporter describes this as "a tad misleading and or confusing" — the quest is required for progression but presented as skippable. This is the clearest documented case of AP19 in the dataset.
+
+**Related patterns:** This is a metadata variant of AP4 (Wrong Gating). AP4 concerns `dependency_requirement` mismatches; AP19 concerns `optional` flag mismatches. R7 (Optional-Gate-Mandatory) already detects this pattern — AP19 documents the player-experience impact that motivated the rule.
+
+**Source:** [TeamAOF/Craftoria #352](https://github.com/TeamAOF/Craftoria/issues/352)
+
+---
+
+### AP20 — Quest Tab Overwhelm (the info-dump chapter)
+
+**Symptom:** The player opens a chapter's quest tab and sees dozens of quests displayed simultaneously with no clear progression path, no visual hierarchy, and no gating to guide their attention. The chapter "throws everything at you" instead of revealing content progressively. The player doesn't know where to start or which quest to do next.
+
+**Root cause:** The chapter uses `flexible` or no progression mode with minimal `hide_until_deps_visible` usage, so all quests are visible from the start. Combined with shallow or inconsistent dependency structures (AP4 variant), the dependency graph doesn't create a clear visual path. The chapter lacks a visual hierarchy — no distinctive root quest, no clear fan-out structure, no shape or size differentiation between entry-level and advanced quests.
+
+**Consequence:** Players feel overwhelmed and disoriented. Instead of the quest book serving as a progression guide, it becomes a wall of content that the player must parse manually. New players who rely on the quest book as their primary tutorial are particularly affected — they see "everything at once" and don't know which path is correct. This is the presentation-layer analog of AP5 (Empty Quest Description) — AP5 fails at the individual quest level; AP20 fails at the chapter level.
+
+**Fix:** (1) Use `hide_until_deps_visible: true` on non-entry quests so the chapter reveals progressively as the player advances.（注意：过度使用此机制会导致 AP7 Hidden Quest Trap，确保被隐藏的 quest 在其依赖链自然推进时可见。）(2) Establish a clear visual hierarchy: one distinctive root quest (large size, unique shape), fan-out to tier-1 quests, then tier-2, etc. (3) Use `hide_dependency_lines: true` to reduce visual clutter in dense chapters. (4) For long mod progression (like Powah's multi-tier reactor system), structure as a linear chain (MP6) with progressive reveals rather than a flat catalog. (5) Test by opening the chapter as a new player — if you can't immediately identify "do this first," the presentation needs work.
+
+**Real case (Craftoria #231):** "The quests in the Powah tab kinda just throws everything at you" — a player explicitly identifies the Powah chapter's presentation as overwhelming. The reactor quest has "dependencies that should definitely not" exist, and the player suggests "restructure Powah quests to be more linear" because a linear structure would "make it more accessible to learn as it would guide the player through the process." This is AP20 combined with AP4 (wrong gating) and AP18 (reward desert) — the triple failure of gating, rewards, AND presentation in a single chapter.
+
+**Related patterns:** AP20 is the presentation-layer complement of AP4 (Wrong Gating) and AP5 (Empty Description). While AP4 concerns dependency logic and AP5 concerns individual quest content, AP20 concerns the chapter's overall visual presentation and information density. R21 (Hidden Quest Signpost) partially addresses this by requiring signposts for hidden content; AP20 argues that visible content also needs progressive disclosure.
+
+**Source:** [TeamAOF/Craftoria #231](https://github.com/TeamAOF/Craftoria/issues/231)
+
+---
+
+### AP21 — Version-Maturity Mismatch (the deceptive version number)
+
+**Symptom:** The player downloads a modpack with a high version number (e.g., v5.5) expecting a mature, polished experience, but discovers the pack is actually in early development with incomplete quests, placeholder descriptions, and missing features. The version number creates expectations that the actual content doesn't meet, leading to disappointment and negative first impressions.
+
+**Root cause:** The pack author uses a version numbering scheme that implies maturity (incremental patch versions like 5.5, 5.10.7) while the actual quest content, descriptions, and systems are still in early development. This may be intentional (the author considers v5.x their fifth major iteration) or accidental (version numbers reflect infrastructure/mod updates rather than content completeness). The mismatch between version semantics and content maturity is the core failure.
+
+**Consequence:** Players who judge by version number alone form expectations of a finished product. When they encounter incomplete quests, placeholder descriptions, or missing features, the disappointment is amplified by the expectation gap. Reviewers may publicly characterize the pack as "半成品" (half-finished product), damaging its reputation before it has a chance to mature. This is particularly damaging for packs that rely on first impressions for community growth.
+
+**Fix:** (1) Use version numbering that honestly reflects content maturity: 0.x for pre-release, 1.0 for feature-complete. (2) If the version number reflects infrastructure iterations, clearly document the content completion status on the pack's main page. (3) For packs in active development, use a visible "Early Access" or "Beta" label alongside the version number. (4) Prioritize completing at least the first 2-3 chapters to a polished standard before public release, even if later chapters remain incomplete.
+
+**Real case (DeceasedCraft):** A Bilibili reviewer (BV1pjGXziE2J) explicitly criticizes DeceasedCraft's version-maturity gap: despite version 5.5, the pack is described as a "半成品" (half-finished product), with the reviewer suggesting the version should be "0.55" to match actual maturity. The review title advises "让子弹再飞一会" (let the bullet fly a while longer). A second case: Cosmic Frontiers promises "深度任务系统" (deep quest system) while acknowledging "任务描述还在完善中" (quest descriptions still being completed).
+
+**Related patterns:** AP21 is a meta-level variant of AP1 (Description-Reality Mismatch) — instead of individual quest descriptions lying, the pack's version number and marketing materials create a false impression of completeness. Unlike AP1 which damages trust in the quest book, AP21 damages trust in the pack itself.
+
+**Source:** [Bilibili BV1pjGXziE2J](https://www.bilibili.com/video/BV1pjGXziE2J), [MC百科 modpack/931](https://www.mcmod.cn/modpack/931.html)
+
+---
+
+### AP22 — Config-Drift Description Staleness (the outdated quest text)
+
+**Symptom:** A quest description accurately described game mechanics when originally written, but subsequent mod updates, config changes, or recipe modifications have made the description incorrect. The quest text references items, enchantments, ratios, or behaviors that no longer exist in the current game state. Unlike AP1 (where the description was wrong from the start), AP22's descriptions were once correct but became wrong through drift.
+
+**Root cause:** Quest descriptions are free-form text strings with no automated validation against game state. When the pack author updates mod configs, changes recipes, adds or removes mods, or updates mod versions, the quest descriptions are not automatically flagged for review. The description drift accumulates silently over multiple pack updates. In FTB Quests config terms, the `description` field is never diff-checked against mod state changes during pack updates.
+
+**Consequence:** Players who follow quest descriptions encounter mechanics that don't work as described, wasting time on approaches that are no longer valid. Unlike AP1 (which may be caught during initial playtesting), AP22 is particularly insidious because the descriptions were tested and correct at some point — the author has no reason to re-check them. This creates a "trust decay" where older quest descriptions become progressively less reliable as the pack matures.
+
+**Fix:** (1) Maintain a "quest description review checklist" for each pack update, flagging any quest that references changed mods, recipes, or configs. (2) When disabling features in config (e.g., enchantments), search quest descriptions for references to those features and update accordingly. (3) Use versioned comments in quest descriptions noting when the description was last verified (e.g., "[verified 1.14.1]"). (4) For critical mechanics (ratios, slot counts, crafting requirements), consider referencing JEI/EMI directly in the description rather than hardcoding values. (5) When receiving player reports of description errors, fix them promptly — these are high-value, low-effort fixes.
+
+**Real case (GTM Community Pack Modern):** Issue #152: Multiple early-game quests describe enchantments on butcher knife and invar mining hammer, but enchantments are disabled by default in the latest config. Reporter states: "Either change the quests descriptions or enable the enchantments." Issue #131: Quest claims EV+ arc furnaces have 9 slots; actual GUI has 4 (may have been correct for a previous mod version). Issue #189: Quest book states wrong steam:EU ratio (2:1 vs documented value). All three cases show descriptions that were likely correct when written but became wrong through config/mod updates.
+
+**Related patterns:** AP22 is a temporal variant of AP1. While AP1 concerns descriptions that were never correct, AP22 concerns descriptions that became incorrect over time. AP22 is more detectable than AP1 because it correlates with config change events — any pack update that modifies mod configs should trigger a quest description review pass. R48 (Quest Port Drift Adaptation Checklist) partially addresses this for ported content; AP22 extends the concept to native content that drifts through in-place updates.
+
+**Source:** [GregTechCEu/GregTech-Modern-Community-Pack #152](https://github.com/GregTechCEu/GregTech-Modern-Community-Pack/issues/152), [#131](https://github.com/GregTechCEu/GregTech-Modern-Community-Pack/issues/131), [#189](https://github.com/GregTechCEu/GregTech-Modern-Community-Pack/issues/189)
+
+---
+
 ## Sources
 
 1. **FTBTeam/FTB-Modpack-Issues #6447** — "List of Observations in FTB Evolution (WIP)." A player's exhaustive audit of quest design problems in FTB Evolution, including description mismatches, circular dependencies, gating errors, and missing content. https://github.com/FTBTeam/FTB-Modpack-Issues/issues/6447
@@ -460,4 +539,8 @@ These anti-patterns address systemic reward design failures that emerge from the
 
 11. **TeamAOF/Craftoria (2024–2026)** — Issue tracker for Craftoria (MC 1.21.1, NeoForge kitchen-sink). Source of AP4 cases (#231 Powah gating, #607 Iron's Spells gating, #352 optional-but-mandatory), AP12 case (#666 PNC:R PCB NBT), AP17 case (#289 xp_levels reward relativity), and AP18 case (#231 reward desert). Richest new data source for reward economy and gating issues. https://github.com/TeamAOF/Craftoria/issues
 
-12. **EnigmaticaModpacks/Enigmatica10 (2025–2026)** — Issue tracker for Enigmatica 10 (MC 1.21.1, NeoForge expert pack). Notable for having ZERO quest design complaints among ~20 recent issues (mostly Bug and Suggestion labels). This negative evidence — a high-profile expert pack with no quest-related issues — suggests the Enigmatica team's quest QA process is effective. https://github.com/EnigmaticaModpacks/Enigmatica10/issues
+12. **EnigmaticaModpacks/Enigmatica10 (2025–2026)** — Issue tracker for Enigmatica 10 (MC 1.21.1, NeoForge expert pack). Cycle 7 revision: previously reported as having ZERO quest design complaints; actually has ~6 quest-related issues including progression blockers ("Unable to progress in Mekanism quest line"), item acceptance bugs (Occultism candles, Eldritch chalice), reward errors ("Possibly wrong quest rewards"), and description issues ("Modern Industrialisation quest description issue"). Complaint volume remains lower than comparable packs, but "zero complaints" was overstated. https://github.com/EnigmaticaModpacks/Enigmatica10/issues
+
+13. **AllTheMods/ATM-10 Discussion #3539** — "The Quest Book gives way too many rewards that break balance." Player debate about whether generous quest rewards (Dragon Egg, Ender Chests, Ultimate Universal Cables) in a kitchen-sink pack constitute progression-breaking inflation or genre-appropriate design. Source of the reward perception split documented in AP8 Cycle 7 validation and MP38. https://github.com/AllTheMods/ATM-10/discussions/3539
+
+14. **Omicron-Industries/Monifactory #2359** — "[Feature]: Better Tutorialisation of Basic Mechanics." Player request for improved quest descriptions covering GT covers, Aqueous Accumulator configuration, Smart Item Filter, Lossless Cables, Machine Controller powerfailing, and AE2 chapter. Source of AP5 Cycle 7 validation showing tutorialisation debt persists even in well-regarded expert packs. https://github.com/Omicron-Industries/Monifactory/issues/2359

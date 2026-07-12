@@ -14,12 +14,16 @@
 | MP23 | Invisible Infrastructure | Step 2 | -- | expert |
 | AP5 | Empty Quest Description | Step 2/4 | Medium | all |
 | AP13 | Premature Item Submission | Step 4 | Medium | all |
+| AP20 | Quest Tab Overwhelm (info-dump chapter) | Step 2 | Medium | kitchen-sink, create |
 | R14 | Teach-Then-Do Ordering | Step 5 | P1 | all |
 | R15 | Complexity Escalation | Step 5 | P2 | all |
 | R17 | Tool-Reward-Before-Use | Step 4/5 | P2/P3 | all |
 | R18 | Description Coverage | Step 4 | P1 | all |
 | R19 | Bottleneck Spacing | Step 5 | P2 | all |
 | R21 | Hidden Quest Signpost | Step 5 | P3 | all |
+| R40 | Effort Preview in Description | Step 4/5 | P2 (INFO) | expert, kitchen-sink |
+| R41 | Early-Game Flexible Mode | Step 5 | P2 (INFO) | all |
+| R47 | Companion Tool Delegation | S4/S5 | P3 (INFO) | companion, tutorial |
 | PP5 | Context Void | Step 2 | -- | all |
 
 ---
@@ -64,6 +68,8 @@ Separates player-facing UX from pack-author-facing logic. Player never sees invi
 
 **Real case (Monifactory):** ~11% of quests in invisible chapters. Visible book is a clean tech-tree UI; invisible book runs the voltage-tier gating system. E9E: 56 command rewards in `chapter_one` alone but zero gamestage tasks in visible chapters.
 
+**Cross-pack comparison (Phase 3 Cycle 5 — GT-O vs Monifactory):** GregTech-Odyssey uses **ZERO command rewards** in all sampled visible chapters (EV: 0 commands/82 item rewards, HV: 0 commands/94 item rewards), despite being a similar GregTech expert pack. GT-O achieves stage gating through `hide_quest_until_deps_visible: true` at chapter level + `quest_links` for cross-chapter references (3-6 per chapter in EV, more in HV) instead of command-based gamestage routing. Two viable invisible infrastructure approaches emerge: (1) **command-heavy** (Monifactory: 26 commands in dependency_chain, E9E: 56 commands) with explicit gamestage tasks in invisible chapters, and (2) **dependency-implicit** (GT-O: 0 commands in visible chapters) with visual gating via `hide_quest_until_deps_visible` and cross-chapter `quest_links`. GT-O's 14 voltage-tier chapters (ULV through OPV) use quest_links extensively (EV: 6 links, HV: multiple links with shape overrides) to reference quests across tiers without duplicating data. Both approaches produce clean player-facing UX but differ in implementation: command-heavy requires invisible chapters + gamestage tasks; dependency-implicit relies on FTB Quests' native dependency resolution.
+
 ---
 
 ## Anti-Patterns
@@ -79,6 +85,12 @@ Quest has no description — just an item icon and a task. Player sees WHAT (the
 Catalog chapter recipe cells are an acceptable exception — `rsquare`/`circle` shape, size <= 2.0, single task, catalog chapter context. R18 encodes this exception.
 
 **Expert pack amplification:** For GregTech expert packs where the questbook IS the tutorial system (MP23), missing descriptions have outsized impact — players have no other in-game guidance. Monifactory #2359 explicitly requests "better tutorialisation of basic mechanics."
+
+**Insufficient-description variant (Craftoria #781):** Description exists but delegates all guidance to an external source ("the AE2 guide"). When the external source doesn't cover the specific pack context (how AE2 power works in a pack with 5+ energy systems), the delegation becomes an AP5 variant — the quest has words but no useful guidance.
+
+**Missing-guidance variant (NFwC #333):** Quest chain lacks guidance for biome-dependent items (dyes, cactus, kelp) and tool prerequisites (wrench, speed controller). Players must rely on external knowledge or trial-and-error. The issue explicitly requests the quest book to "directly give these necessary items" rather than assuming biome availability. AP5 variant: not empty description but missing critical context about *where* to find prerequisite items in a seed-dependent world.
+
+**Undocumented-prerequisite variant (GregTech-Odyssey #1440):** Stainless Steel 15 5ph requires an EV-level mixer with platline setup, but "No indication in questbook." The quest book shows the task but not the infrastructure chain needed to complete it. AP5 + PP5 compound in expert packs: the quest tells you WHAT but not HOW, and the HOW requires multi-step infrastructure that's not covered elsewhere.
 
 ### AP13 — Premature Item Submission
 
@@ -182,6 +194,86 @@ Quest shows only an item icon and a task count with no description. Player compl
 **Minimum viable description:** One sentence combining HOW and WHY: "Smelt iron ore in a furnace — you'll need this for your first set of tools." Costs nothing to write, transforms checklist item into learning moment.
 
 **Expert pack amplification (Monifactory #2359):** Player explicitly requests better tutorialisation. The Aqueous Accumulator quest doesn't mention pump configuration — player wastes ~30 minutes before discovering the mechanic. In expert packs where the questbook IS the tutorial (MP23), PP5 is amplified because there's no alternative in-game guidance.
+
+**Signpost-adequacy variant (Architect's Exodus #12623):** After defeating Skol and Hati, player has no clear guidance about where to go next (Asgard to fight Maledictus). The quest scroll text exists but is triggered by consuming the twin's heart — a non-obvious action. Player: "Your just kinda left in the blank to go fight him but doesn't say where." Pack dev response confirms the guidance exists but players consistently miss it. PP5 variant: description exists but is insufficient — the signpost is present but not prominent enough.
+
+**Chapter-coverage gap (Craftoria #781):** AE2 chapter's first quest references the AE2 in-game guide but omits critical information about power generation (vibrant chamber, Energy Acceptor, ME controller). Player: "if the AE2 guide is the answer, why do we have dozens of other quests?" This is a chapter-level PP5: the individual quests exist but the chapter as a whole has a guidance gap at the entry point.
+
+**Cross-tier effort spike (GregTech-Odyssey #1602):** HV tier requires 400+ MV motors and 37 multiblock blocks, but the quest book doesn't prepare players for this massive effort jump from LV/MV. Player describes "easily running out of motivation" and "falling into a trap of working all day and getting nothing done." PP5 variant: the quest book shows the tasks but not the *scale* of work required, creating a context void at tier transitions in expert packs.
+
+**Expert pack tool-gating void (NFwC #333):** Quest chain requires gold/redstone items that are biome/seed-dependent and assumes availability without guidance. The issue explicitly asks for "wrench and speed controller to be given directly" because the quest book doesn't explain where to find them in a world without chain mining. PP5 variant: the quest assumes a resource-gathering method that the quest book doesn't teach.
+
+**任务书的信息密度与引导能力矛盾（跨包观察）：** 从多个高好评包的攻略标题中可以观察到一个反复出现的模式：GTNH 的玩家写了"Better GTNH（任务书不会告诉你的）"，E2E 的玩家写了"Enigmatica 2: Expert 刚开始你就希望知道的技巧"（MC百科 21,000+ 阅读），RAD2 的玩家写了"RAD2中期游玩心得"。这些包都有 600-3000 个任务和 98-100% 的好评率，说明问题不在于任务数量不够多。信息密度（任务数量、描述长度）和引导有效性（玩家是否真的能从任务书中学到所需知识）是两个独立的维度。高任务数量提供了覆盖面，但不保证在正确的时机以正确的方式传达了正确的信息。
+
+[Phase 2 Cycle 8 - MC百科 GTNH https://www.mcmod.cn/modpack/1.html, E2E https://www.mcmod.cn/modpack/23.html, RAD2 http://www.mcmod.cn/modpack/419.html]
+
+### R40 -- Effort Preview in Description (Tier Transition Context)
+
+**Step 4 priority:** P2 (INFO)
+**Step 5 priority:** P3 (INFO)
+**Data dependency:** Chapter-level effort statistics
+
+Quest descriptions at technology tier transitions must include an effort preview -- a statement about the scale of work required at the new tier. Addresses the #1 cause of player burnout at tier boundaries: the surprise effort spike. Description should mention resource counts, new infrastructure needs, or time investment.
+
+**Detection heuristic:** Scan for effort keywords (multiblock, infrastructure, automation, N items/blocks, significant, prepare, stockpile, etc.) in descriptions of tier-transition quests.
+
+**Why:** GregTech-Odyssey #1602 -- "even for an expert, being asked to make so many motors at HV is easy to make the player burn out." Monifactory #2359 -- 30 minutes wasted on pump configuration due to missing description context.
+
+**Source:** GregTech-Odyssey #1602, Monifactory #2359
+
+### R41 -- Early-Game Flexible Progression Mode
+
+**Step 5 priority:** P2 (INFO for early-game linear chains)
+**Data dependency:** Chapter order index + progression_mode
+
+The first N chapters (default N=3, configurable) should use `flexible` progression mode even if the pack's overall mode is `linear`. Early-game linear gating forces new players into a single path before they understand the pack's scope. Early chapters should serve as orientation -- teach and orient, don't gate and restrict.
+
+**Why:** Craftoria #607 recommends `flexible` mode for Iron's Spells early gating -- crying obsidian creates unnecessary bottleneck. "Flexible mode allows for cleaner early game progression." Expert packs (Monifactory, GT-O) mitigate by using invisible routing chapters for linear logic while visible chapters stay flexible.
+
+**Source:** TeamAOF/Craftoria #607
+
+### 早期教学快速推入策略
+
+高难度包的早期教学面临一个独特的时间窗口问题：玩家的新奇感快速消退，惩罚性的时间门控在早期游戏中失败，因此必须在玩家热情最高的前几个任务中完成核心机制的教学并快速推入中期内容。具体做法是：前 3-5 个任务应包含明确的教学文本，介绍包的核心差异化机制——不是"提交 X 个物品"的纯操作任务，而是结合了独特机制、彩蛋或随机元素的引导性任务，让玩家在钩住的同时学会怎么玩。教学任务不应假设玩家知道模组的默认行为，每个关键机械原理都应该有对应的教学节点。[Phase 3 Cycle 8 - mcmod.cn/post/4382.html]
+
+这个策略与 R14（Teach-Then-Do Ordering）和 R41（Early-Game Flexible Mode）形成三层教学框架：R41 保证早期不锁死路径（结构层），教学快速推入保证早期传达关键知识（内容层），R14 保证教学节点始终先于应用节点（顺序层）。三层共同作用的结果是：玩家在早期既不迷路（R41），也不无知（教学推入），也不会先做后学（R14）。
+
+### R47 — Companion Tool Delegation (伴生工具委托)
+
+**Step 4 priority:** P3 (INFO — 每节点检查)
+**Step 5 priority:** P3 (INFO — 全量扫描)
+**数据依赖:** 包 modlist（确定 recipe viewer 和文档 mod 是否在场）
+
+**检查什么：** 当 questbook 以 companion 模式运行时（R46 声明），quest 描述不应重复配方查看器（EMI/JEI/HEI）或模组自身的游戏内文档（Patchouli guides、Ponder 系统）中已有的信息。检测描述中包含逐字配方信息（输入→输出模式、机器加工步骤）但配方查看器已经显示相同内容的情况。此规则是 AP5（空描述）的反面——AP5 标记过于稀疏的描述，R47 标记在 questbook 声明角色下过于冗余的描述。
+
+```
+if pack.questbook_role == "companion":
+    for each quest Q:
+        desc = Q.description
+        if contains_recipe_pattern(desc):  # "X + Y = Z", "put X in Y to get Z"
+            if recipe_viewer_available:  # EMI/JEI in pack
+                INFO: "Description contains recipe info already shown in {viewer}.
+                       Consider delegating to the recipe viewer."
+        if references_ponder_system(desc) and mod_has_ponder:
+            INFO: "Description explains a Ponder-able mechanic.
+                   Consider referencing the Ponder entry instead."
+```
+
+此规则对 tutorial 模式的包反向适用：如果 `questbook_role == "tutorial"` 而描述委托给 EMI/JEI（"check EMI for the recipe"），标记为 WARNING——tutorial 模式应该教学，而非委托。
+
+**设计哲学基础：** Pyritie/TFG Modern #3656 明确阐述了三通道信息架构：questbook 负责方向（direction），field guide 负责机制（mechanics），EMI 负责配方（recipes）。每个通道有特定的不重叠的角色。当 questbook 描述侵入其他通道的领域时，信息架构的一致性被破坏，玩家不确定在哪里查找什么信息。
+
+**违反了会怎样：** 不是功能性错误，而是设计一致性问题。Companion 包中过于详细的描述增加了维护成本（配方变更需要同步更新 questbook 和 EMI），同时向玩家发送矛盾信号——如果 questbook 告诉你一切，为什么还需要 EMI？
+
+**来源：** Pyritie/TFG Modern #3656; Phase 3 Cycle 9
+
+**Scope note (Phase 4 Review):** R47 的正向检查仅适用于声明了 `questbook_role: companion` 的包（在 46 包数据集中约占 4%）。反向检查（tutorial 包不应委托）适用范围更广。R47 与 R46 强耦合——如果 R46 的角色声明不成立，R47 的正向检查失去前提。考虑将 R47 重构为更通用的"questbook 描述应与包的信息架构一致"规则，不依赖特定角色声明。
+
+### Monifactory #2359：教学不足的典型失败案例
+
+Monifactory Issue #2359 由 LunatiK-ExpiX 提出，标题直接指向问题核心——"Better Tutorialisation of Basic Mechanics"。该 issue 指出"教程化（Tutorialisation）在制作这个包时可能没有被充分考虑"，并给出了具体的失败场景：Infiniter Water 和 LV Pumps 任务几乎不提供如何使用物品的信息；Aqueous Accumulator 让玩家困惑，"可能导致他们花费超过需要的时间，30 分钟后才意识到需要配置泵"。这不是 AP5（空描述）——任务确实存在且包含物品要求，但描述中缺少了关键的操作指引：不是告诉你 WHAT（提交水泵），而是缺少 HOW（如何配置泵的输入输出）和 WHY（为什么需要配置泵而不是直接使用）。[Phase 3 Cycle 8 - github.com/Omicron-Industries/Monifactory/issues/2359]
+
+该 issue 的解决方案提议是给介绍 Gregtech 关键特性的任务增加更多机械原理说明——这恰好对应 MP11（Teach-Then-Do）的设计模式：先有一个教学节点（checkmark 任务 + 详细描述水泵配置方法），再有一个应用节点（item 任务要求提交已配置的水泵）。在 expert pack 中，任务书就是教程系统（MP23），教学缺失意味着玩家完全没有游戏内引导。FTB Quests 的多种任务类型（物品、流体、能量、维度、统计、击杀、坐标、复选框）可以组合使用来实现教学效果：复选框任务用于纯教学节点（无需提交物品），文本面板插入背景故事或教学说明，维度任务在玩家访问特定领域时自动触发。教学节点应位于实践节点的前置依赖位置，这是 R14 的检查逻辑。[Phase 3 Cycle 8 - mcmod.cn/post/1416.html]
 
 ---
 

@@ -641,6 +641,8 @@ for each quest Q:
 
 **来源：** AP6（Reward That Doesn't Bridge）；micro-patterns MP14（Material Bridge）、MP15（Tool Reward）；FTB Evolution issue #6447 中 "rewards the immersive engineering hammer, rather than the Oritech wrench"——reward 给了错误的工具。
 
+> **规则优先级 (Cycle 7):** **R10 > R12**。Material bridge 是功能性需求（reward 必须引导玩家到下一步），reward value progression 是美学需求（reward 价值应递增）。当两者冲突时（例如 depth-2 quest 奖励高价值 bridge material 而 depth-3 quest 奖励低价值 XP），R10 的 bridge 完整性优先于 R12 的价值递增。R12 的 WARNING 应添加 material bridge 例外：如果 reward 满足 R10 bridge 条件，即使价值递减也不触发 R12。
+
 ---
 
 ### R11 — Reward-Target Accuracy (Wrong Tool Detection)
@@ -702,6 +704,8 @@ for each chapter C:
 **违反了会怎样：** AP8（Reward Inflation）的逆向版本——玩家在高难度 quest 中获得比低难度 quest 更差的 reward，动力丧失。或者更常见的情况是，early game 给了太多高价值 reward（inflation），导致 mid-game 的 reward 显得寒酸。
 
 **来源：** AP8（Reward Inflation）；cesspit.net 描述的 reward pacing 原则——"you have to work hard to get to a milestone"之后 reward 应该匹配 effort；ATM-10 的 XP drip 设计（10/50/100 XP tiers，随深度递增，micro-patterns MP16）。
+
+> **规则优先级 (Cycle 7):** **R10 > R12**（交叉引用）。当 reward 满足 R10 的 material bridge 条件时（reward item 出现在 dependent quest 的 task 中），即使其价值高于后续 reward，也不应触发 R12 的 WARNING。R12 仅对 non-bridge reward（XP、currency、cosmetic item）执行价值递增检查。Material bridge 是功能性的，value progression 是美学性的。
 
 ---
 
@@ -1775,3 +1779,536 @@ anti-patterns.md 是「错误 + 后果」的人类可读描述；progression-rul
 20. **TeamAOF/Craftoria Issues** — 8 条 quest 相关 issue，最关键的是 #289（xp_levels reward 价值随玩家等级漂移）和 #231（Powah chapter 的 reward desert）。还包含 #607（linear→flexible gating 建议）、#352（optional-but-mandatory Mekanism quest）、#666（NBT sensitivity issue，验证 AP12）。 https://github.com/TeamAOF/Craftoria/issues
 
 21. **EnigmaticaModpacks/Enigmatica10 Issues** — 零 quest 设计投诉（~20 issue 均为 Bug/Suggestion/Translation 标签），作为「有效 QA/playtesting 消除基础 quest 问题」的负面证据。#507 暗示 Expert 变体正在规划中。 https://github.com/EnigmaticaModpacks/Enigmatica10/issues
+
+22. **AllTheMods/ATM-10 Discussion #3539** — "The Quest Book gives way too many rewards that break balance." TheBedrockMaster（ATM collaborator）明确提出 Capstone-Only Progression Break 原则："It is a kitchen sink pack, the only thing that could actually break progression would be gifting out ATM Stars." Utility items（Ender Chest, Universal Cables）不视为 progression-breaking。 https://github.com/AllTheMods/ATM-10/discussions/3539
+
+23. **TeamAOF/Craftoria Issues #231, #607** — #231 记录了 Powah chapter 的 reward desert（3 tiers of reactors with no rewards）和 quest 重构请求。#607 提出 Iron's Spells 的 early gating 应从 crying obsidian 改为 basic table，推荐 `flexible` mode 用于"cleaner early game progression"。 https://github.com/TeamAOF/Craftoria/issues
+
+24. **GregTech-Odyssey #1602** — HV tier 需要 400+ MV motors + 37 multiblock blocks + platline setup，但 quest book 没有 prepare players for the effort jump。玩家报告"easily running out of motivation"。建议增加 degraded pattern distributor 作为 intermediate reward。
+
+25. **Monifactory #2359** — Tutorialisation debt：Aqueous Accumulator 不提及 pump configuration，玩家浪费 30 分钟才发现机制。AP5 在 expert pack 中的量化后果。
+
+---
+
+## Cycle 7 Phase 3 — Author-Interview-Derived Rules (R36-R41)
+
+以下六条规则从整合包作者的设计文档、issue tracker 讨论和 GitHub discussion 中提炼。它们补充而非替代 R1-R35，侧重于作者在访谈中明确表达的设计理由（WHY），而不只是从配置数据中推断的统计规律。
+
+### R36 -- Dependency Root Isolation
+
+**Step 5 priority:** P2 (WARNING)
+**Data dependency:** None (pure graph structure)
+
+**Constraint:** Every quest must have at least one dependency, unless it is located in a designated root/hub chapter. Monifactory calls this the `dependencies` chapter; ATM-10 concentrates roots in each chapter group's opener chapter. A quest without dependencies in a standard progression chapter becomes an unpredictable orphan -- the player may stumble upon it accidentally or miss it entirely, and the quest book cannot control when it appears.
+
+**Detection:**
+
+```
+ROOT_CHAPTERS = user-provided or ["dependencies", "getting_started", "welcome"]
+
+for each quest Q:
+    if not Q.dependencies:
+        if Q.chapter.name not in ROOT_CHAPTERS:
+            WARNING: "Quest {Q.name} has no dependencies but is not in a
+                      designated root chapter. Add a dependency or move
+                      to a root chapter."
+```
+
+**Why this matters (author rationale):** Monifactory CONTRIBUTING.md explicitly states "All quests should have at least one dependency except the quests in the 'dependencies' chapter" and the initial Genesis task. This ensures every quest has a defined entry point in the progression graph. A rootless quest in a non-root chapter is essentially a hidden quest without the `hide_until_deps_visible` flag -- it's visible but has no narrative or progression context.
+
+**Validated against:** Monifactory (strict compliance -- all visible chapter quests have dependencies, roots concentrated in `dependencies` chapter). ATM-10 (roots concentrated in chapter group openers). Mechanomania and Cabricality have sporadic rootless quests in non-root chapters -- likely intentional catalog design but worth flagging.
+
+**Source:** Omicron-Industries/Monifactory CONTRIBUTING.md (https://github.com/Omicron-Industries/Monifactory/blob/main/CONTRIBUTING.md)
+
+---
+
+### R37 -- Capstone-Only Progression Break (Reward Safety Tiers by Pack Type)
+
+**Step 5 priority:** P2 (INFO for kitchen-sink, WARNING for expert)
+**Data dependency:** Item tier estimation (L1 heuristic + L2 user data)
+
+**Constraint:** In kitchen-sink packs (`progression_mode: "flexible"`), only capstone-tier items (ATM Star, Creative items, endgame-only items) constitute a true progression break when given as quest rewards. Utility items (Ender Chest, Universal Cable, basic machines) are sandbox tools, not progression items. In expert packs (`progression_mode: "linear"` or `"default"`), ANY gated item given early is a progression break.
+
+**Detection:**
+
+```
+CAPSTONE_ITEMS = {
+    "allthemodium:atm_star", "allthemodium:patrick_star",
+    "minecraft:creative_mode_item",  # placeholder for any creative item
+    # L2: user-provided capstone items
+}
+
+for each quest Q:
+    for reward in Q.rewards:
+        if reward.type in ("ftbquests:item", "item"):
+            if reward.item.id in CAPSTONE_ITEMS:
+                if not is_capstone(Q):
+                    WARNING: "Capstone-tier reward {reward.item.id} on
+                              non-capstone quest {Q.name}."
+            elif pack_mode == "expert":
+                item_stage = estimate_item_stage(reward.item.id)
+                quest_stage = determine_stage(Q.chapter)
+                if item_stage > quest_stage:
+                    WARNING: "Expert pack: utility reward {reward.item.id}
+                              (stage {item_stage}) on quest in stage
+                              {quest_stage}. Even utility items can
+                              break progression in linear mode."
+```
+
+**Why this matters (author rationale):** TheBedrockMaster (ATM-10 collaborator) in Discussion #3539: "It is a kitchen sink pack, the only thing that could actually 'break progression' would be gifting out ATM Stars." He specifically defends Ender Chests and Universal Cables as non-progression-breaking: "I don't see how being rewarded an Ender Chest would break balance or progression in a pack like this." This principle formalizes the kitchen-sink reward safety threshold: pack authors should document what constitutes a capstone item and only gate those.
+
+**Validated against:** ATM-10 (rewards include Ender Chests, diamonds, and high-tier cables on routine quests -- defended as genre-appropriate). Expert packs (Monifactory, GT-O) never give gated materials early -- confirms the pack-type split.
+
+**Source:** AllTheMods/ATM-10 Discussion #3539 (https://github.com/AllTheMods/ATM-10/discussions/3539)
+
+---
+
+### R38 -- Tier Transition Milestone Reward
+
+**Step 5 priority:** P2 (WARNING)
+**Data dependency:** Tier/chapter ordering + effort estimation
+
+**Constraint:** When a quest chain crosses a technology tier boundary (e.g., MV to HV in GregTech, Basic to Hardened in Mekanism, Iron to Diamond in vanilla), the first quest at the new tier must include at least one reward that helps bridge the effort gap. This can be: (a) a material reward that partially satisfies new-tier crafting requirements, (b) a tool reward that speeds up new-tier processing, (c) an efficiency upgrade for an earlier-tier process. Chains crossing tier boundaries without intermediate rewards are AP18 (Reward Desert) amplified by effort spikes.
+
+**Detection:**
+
+```
+for each quest Q:
+    for dep_id in Q.dependencies:
+        dep_quest = get_quest(dep_id)
+        if tier_of(Q) > tier_of(dep_quest):
+            # This quest crosses a tier boundary
+            has_bridge_reward = any(
+                r.type in ("ftbquests:item", "item")
+                and estimate_item_stage(r.item.id) >= tier_of(Q)
+                for r in Q.rewards
+            )
+            has_xp_reward = any(
+                r.type in ("ftbquests:xp", "xp",
+                           "ftbquests:xp_levels", "xp_levels")
+                for r in Q.rewards
+            )
+            if not has_bridge_reward and not has_xp_reward:
+                WARNING: "Quest {Q.name} crosses tier boundary
+                          ({tier_of(dep_quest)} -> {tier_of(Q)})
+                          but has no tier-appropriate reward.
+                          Consider adding a material bridge,
+                          tool reward, or XP to help players
+                          bridge the effort gap."
+```
+
+**Why this matters (author rationale):** Craftoria #231 documents the Powah chapter going through "3 tiers of reactors with no relevant quest rewards" -- the player explicitly requests restructuring because the lack of rewards at tier transitions makes learning feel like a grind rather than guided progression. GregTech-Odyssey #1602 reports that the HV tier requires massive material investment with no rewards bridging the gap from MV, and suggests adding a degraded pattern distributor as an intermediate reward. The player explicitly states "even for an expert, being asked to make so many motors at HV is easy to make the player burn out."
+
+**Validated against:** Craftoria #231 (Powah 3-tier reward desert), GregTech-Odyssey #1602 (HV effort spike without bridge), ATM-10 Mekanism chapter (tier transitions consistently reward intermediate materials).
+
+**Source:** TeamAOF/Craftoria #231, GregTech-Odyssey #1602
+
+> **报告冗余注意 (Cycle 7):** R38 与 R10（Reward Bridge）和 R19（Bottleneck Spacing）在 tier-transition quest 上存在三重覆盖。同一个 tier-transition quest 缺少 bridge reward 可能同时触发 R10（INFO: reward has no bridge）、R38（WARNING: tier transition without bridge reward）、R19（WARNING: bottleneck streak）。建议执行优先级：**R38 作为 R10 在 tier boundary 的增强版取代 R10 报告**——当 quest 跨越 tier boundary 时，R38 报告而 R10 静默；R19 独立报告（关注连续 bottleneck 的 pacing 问题，与 reward 维度正交）。
+
+---
+
+### R39 -- Guide Quest Deduplication
+
+**Step 5 priority:** P3 (INFO)
+**Data dependency:** Cross-chapter quest content analysis
+
+**Constraint:** A "guide" or "help" quest (one that explains a mechanic without requiring progression items) should appear in at most one chapter. If the same mechanic needs referencing from multiple chapters, use quest links (cross-chapter references) rather than duplicating the quest. Monifactory's CONTRIBUTING.md states: "No quest should be needed in more than one 'Guides and Help' chapter."
+
+**Detection:**
+
+```
+guide_quests = [q for q in all_quests
+                if is_guide_quest(q)]  # checkmark/stat task + long desc + no item task
+
+for each guide_quest in guide_quests:
+    referenced_chapters = set()
+    for Q in all_quests:
+        if guide_quest.id in Q.quest_links or guide_quest.id in Q.dependencies:
+            referenced_chapters.add(Q.chapter.name)
+    if len(referenced_chapters) > 1:
+        INFO: "Guide quest {guide_quest.name} is referenced from
+               {len(referenced_chapters)} chapters: {referenced_chapters}.
+               Consider using quest links from a single canonical location
+               rather than duplicating."
+```
+
+`is_guide_quest` heuristic: quest has only checkmark/stat/observation tasks, description > 100 chars, and no item tasks. Alternatively, the quest is in a chapter named "guides", "help", "tutorial", or similar.
+
+**Why this matters (author rationale):** Monifactory CONTRIBUTING.md explicitly forbids guide duplication: "No quest should be needed in more than one 'Guides and Help' chapter." This prevents maintenance burden (updating the guide in one place but not another) and player confusion (seeing slightly different versions of the same explanation in different chapters).
+
+**Validated against:** Monifactory (strict compliance -- guide quests centralized in the `tutorials` chapter). ATM-10 (some duplication exists -- e.g., energy system explanations appear in multiple mod chapters, but this is mitigated by each explanation being mod-specific rather than generic).
+
+**Source:** Omicron-Industries/Monifactory CONTRIBUTING.md
+
+---
+
+### R40 -- Effort Preview in Description (Tier Transition Context)
+
+**Step 4 priority:** P2 (INFO)
+**Step 5 priority:** P3 (INFO)
+**Data dependency:** Chapter-level effort statistics
+
+**Constraint:** Quest descriptions at technology tier transitions must include an effort preview -- a brief statement about the scale of work required at the new tier. This addresses the #1 cause of player burnout at tier boundaries: the surprise effort spike. The description should mention approximate resource requirements, new infrastructure needs, or time investment.
+
+**Detection:**
+
+```
+EFFORT_KEYWORDS = [
+    r'\d+\s*(?:items?|blocks?|ingots?|motors?|plates?)',
+    r'multiblock', r'infrastructure', r'automation',
+    r'significant', r'substantial', r'major investment',
+    r'time.?consuming', r'prepare', r'stockpile',
+    r'大量', r'需要较多', r'准备', r'自动化',
+]
+
+for each quest Q:
+    for dep_id in Q.dependencies:
+        dep_quest = get_quest(dep_id)
+        if tier_of(Q) > tier_of(dep_quest):
+            # Tier transition quest
+            desc_text = " ".join(Q.description) if Q.description else ""
+            has_effort_preview = any(
+                re.search(pattern, desc_text, re.IGNORECASE)
+                for pattern in EFFORT_KEYWORDS
+            )
+            if not has_effort_preview:
+                INFO: "Quest {Q.name} crosses a tier boundary but its
+                       description lacks an effort preview. Consider
+                       adding: resource count estimates, new infrastructure
+                       requirements, or approximate time investment."
+```
+
+**Why this matters (author rationale):** GregTech-Odyssey #1602 explicitly states the quest book doesn't prepare players for the HV effort spike: "even for an expert, being asked to make so many motors at HV is easy to make the player burn out." Monifactory #2359 quantifies the cost of missing context: players waste 30 minutes figuring out pump configuration for the Aqueous Accumulator because the description doesn't mention it. When descriptions don't set expectations, players calibrate effort against the previous tier and feel blindsided by the jump.
+
+**Validated against:** GregTech-Odyssey #1602 (HV effort spike), Monifactory #2359 (30-minute tutorialisation debt), Craftoria #781 (AE2 chapter delegates all guidance to external guide without pack-specific context).
+
+**Source:** GregTech-Odyssey #1602, Monifactory #2359
+
+---
+
+### R41 -- Early-Game Flexible Progression Mode
+
+**Step 5 priority:** P2 (INFO for early-game linear chains)
+**Data dependency:** Chapter order index + progression_mode
+
+**Constraint:** The first N chapters of a pack (default N=3, configurable in Step 2) should use `flexible` progression mode rather than `linear`, even if the pack's overall mode is `linear`. Early-game linear gating forces new players into a single path before they understand the pack's scope, increasing bounce rate. The early chapters should serve as an orientation period where players can explore freely before committing to the pack's progression structure.
+
+**Detection:**
+
+```
+FLEXIBLE_THRESHOLD = 3  # first 3 chapters should be flexible
+
+for each chapter C:
+    if C.order_index < FLEXIBLE_THRESHOLD:
+        if C.progression_mode == "linear":
+            INFO: "Chapter {C.name} (order_index={C.order_index}) uses
+                   'linear' progression mode in the early game. Consider
+                   'flexible' mode for the first {FLEXIBLE_THRESHOLD}
+                   chapters to allow new players orientation freedom.
+                   Linear gating is more effective after players understand
+                   the pack's scope."
+```
+
+**Why this matters (author rationale):** Craftoria #607 explicitly recommends switching to `flexible` mode for Iron's Spells early gating because the crying obsidian requirement creates an unnecessary bottleneck before players understand the mod's mechanics. The issue states that flexible mode "allows for cleaner early game progression." This principle aligns with the game design concept of "onboarding" -- early content should teach and orient, not gate and restrict. Expert packs that use linear mode throughout (Monifactory, GT-O) mitigate this by having invisible routing chapters handle the gating logic while visible chapters remain flexible.
+
+**Validated against:** Craftoria #607 (flexible mode recommendation for early gating), ATM-10 (all chapters use flexible mode), Monifactory (visible chapters are flexible, invisible chapters handle linear gating via MP23).
+
+**Source:** TeamAOF/Craftoria #607 (https://github.com/TeamAOF/Craftoria/issues/607)
+
+---
+
+## Updated Execution Priority Table (with R36-R41)
+
+The new rules fit into the existing priority framework as follows:
+
+### Step 4 additions
+
+| Priority | Rule | Check type | Failure behavior |
+|---|---|---|---|
+| **P2** | R40 Effort Preview (tier transition) | Keyword scan | INFO -- remind author |
+
+### Step 5 additions
+
+| Priority | Rule | Check type |
+|---|---|---|
+| **P2** | R36 Dependency Root Isolation | Graph scan |
+| **P2** | R37 Capstone-Only Progression Break | Tier estimation |
+| **P2** | R38 Tier Transition Milestone Reward | Cross-tier + reward check |
+| **P2** | R41 Early-Game Flexible Mode | Chapter mode check |
+| **P3** | R39 Guide Quest Deduplication | Cross-chapter reference scan |
+
+### Updated AP mapping
+
+| Anti-pattern | New rule coverage |
+|---|---|
+| AP4 Wrong Gating | **R41** (early-game flexible mode reduces hard-gating friction) |
+| AP5 Empty Description | **R40** (effort preview is a specific description requirement) |
+| AP8 Reward Inflation | **R37** (capstone-only progression break clarifies what counts as "too generous") |
+| AP18 Reward Desert | **R38** (tier transition rewards specifically address cross-tier deserts) |
+
+### Updated rule execution priority (full list, R1-R41)
+
+32. **R36** -- Dependency Root Isolation (dependency graph hygiene, Step 5 P2)
+33. **R37** -- Capstone-Only Progression Break (reward safety tiers, Step 5 P2)
+34. **R38** -- Tier Transition Milestone Reward (cross-tier bridging, Step 5 P2)
+35. **R39** -- Guide Quest Deduplication (content maintenance, Step 5 P3)
+36. **R40** -- Effort Preview in Description (tier transition context, Step 4 P2)
+37. **R41** -- Early-Game Flexible Progression Mode (onboarding design, Step 5 P2)
+
+---
+
+## Cycle 10 Phase 3 Additions (R51–R54)
+
+Rules extracted from author design philosophy research across 54 packs, cesspit.net expert pack analysis, and MC百科 modpack descriptions.
+
+---
+
+### R51: Reward Architecture Role Alignment (奖励架构角色对齐)
+
+**Category:** Reward Continuity
+**Severity:** WARNING
+**Phase:** Step 2 (pack planning)
+
+**Rule:** When a pack declares its questbook role (R46), the reward architecture must align with that role. Mismatches between declared role and actual reward distribution indicate either an undeclared role change or an architectural inconsistency.
+
+**Role-Reward Alignment Matrix:**
+
+| Questbook Role | Expected Reward Model | Safe Deviation |
+|---|---|---|
+| **Companion** (Path of Truth, GTM Community) | Zero rewards OR XP-only | None — item rewards introduce redundancy |
+| **Guide** (ATM-10, RAD3) | Item rewards with material bridges | XP-only chapters if declared |
+| **Hybrid** | Mixed, but per-chapter declaration required | N/A — declaration IS the requirement |
+
+**Detection:**
+
+```
+ROLE_REWARD_MAP = {
+    "companion": {"zero": OK, "xp_only": OK, "item": WARNING},
+    "guide":     {"zero": WARNING, "xp_only": INFO, "item": OK},
+    "hybrid":    {"any": CHECK_CHAPTER_DECLARATION},
+}
+
+for each pack P:
+    declared_role = P.questbook_role  # from R46
+    actual_reward_model = classify_rewards(P.all_quests)
+
+    if actual_reward_model not in ROLE_REWARD_MAP[declared_role].safe:
+        WARNING: "Pack '{P.name}' declares '{declared_role}' role but uses
+                 '{actual_reward_model}' reward model. Expected:
+                 {ROLE_REWARD_MAP[declared_role].safe}. Either update
+                 the role declaration or adjust reward architecture."
+```
+
+**Why this matters (author rationale):** cesspit.net's expert pack analysis shows that the questbook itself IS the reward in companion-mode packs: "a great guide to erase the problem of guessing recipes, and a clear path." Adding item rewards to a companion-mode pack creates player confusion about whether the questbook is a guide or a progression gate. GTCEu's intrinsic satisfaction model ("每一步都伴随着成就感") further validates that engineering accomplishment, not item collection, drives engagement in expert packs.
+
+**Validated against:** GTM Community Pack (1282 quests, zero rewards, companion role), ATM-10 (generous rewards, guide role), Path of Truth (zero rewards, companion role), RAD3 (105 reward tables, guide role).
+
+**Source:** cesspit.net "Minecraft Is Not What You Think" (node/2832), CSDN GTCEu article, Phase 2 zero-reward analysis (R50).
+
+---
+
+### R52: Unlock Leniency Declaration (解锁宽严声明)
+
+**Category:** Dependency Integrity
+**Severity:** INFO
+**Phase:** Step 5 (full-graph validation)
+
+**Rule:** When a pack's `dependency_requirement` distribution is skewed (>70% one_started OR >70% all_completed), the pack description or questbook introduction should explicitly state the unlock philosophy. Silent skew suggests an unconscious design choice that may confuse players.
+
+**Leniency Spectrum:**
+
+| dependency_requirement | Player experience | Author obligation |
+|---|---|---|
+| **one_started majority (>70%)** | Freedom-oriented. Multiple paths through tech tree. Quest completion is additive. | Declare: "This pack allows alternative progression paths" |
+| **all_completed majority (>70%)** | Gate-oriented. Must complete all prerequisites. Quest completion IS the gate. | Declare: "This pack requires completing all prerequisites before advancing" |
+| **Mixed (30-70% either)** | Variable per chapter. | Chapter-level declaration recommended |
+
+**Detection:**
+
+```
+SKEW_THRESHOLD = 0.70
+
+total_quests = count(P.all_quests)
+one_started_count = count(q for q in P.all_quests
+                         if q.dependency_requirement == "one_started")
+all_completed_count = count(q for q in P.all_quests
+                           if q.dependency_requirement == "all_completed")
+
+one_started_ratio = one_started_count / total_quests
+all_completed_ratio = all_completed_count / total_quests
+
+if one_started_ratio > SKEW_THRESHOLD:
+    if not P.has_unlock_declaration("one_started"):
+        INFO: "Pack '{P.name}' uses one_started for {one_started_ratio:.0%}
+               of quests (freedom-oriented design) but has no explicit
+               unlock philosophy statement. Consider adding a questbook
+               introduction explaining the multi-path approach."
+
+elif all_completed_ratio > SKEW_THRESHOLD:
+    if not P.has_unlock_declaration("all_completed"):
+        INFO: "Pack '{P.name}' uses all_completed for {all_completed_ratio:.0%}
+               of quests (gate-oriented design) but has no explicit
+               unlock philosophy statement. Consider adding a questbook
+               introduction explaining the prerequisite requirement."
+```
+
+**Why this matters (author rationale):** DeceasedCraft uses 97% one_started — the most extreme leniency in the 54-pack dataset — but no author statement exists explaining this choice. Players encountering this pack may not understand whether quests are optional alternatives or mandatory gates. Conversely, Monifactory/GTNH use strict all_completed (expert pack convention) but also lack explicit declarations, relying on genre expectation. Making the choice explicit prevents player confusion and helps the pack attract its intended audience.
+
+**Validated against:** DeceasedCraft (97% one_started, no declaration — negative validation), Monifactory/GTNH (strict all_completed, implicit genre convention), ATM-10 (mixed, chapter-variable).
+
+**Source:** DeceasedCraft config analysis (Phase 1), Monifactory CONTRIBUTING.md (Phase 1).
+
+---
+
+### R53: Task Complexity Utility Proportionality (任务复杂度效用正比)
+
+**Category:** Pacing / Task Design
+**Severity:** INFO (per-node) / WARNING (statistical)
+**Phase:** Step 4 (per-node generation) + Step 5 (statistical validation)
+
+**Rule:** The number of tasks per quest should be proportional to the item's utility frequency in the pack's progression. High-demand items (used in many downstream recipes) justify multi-task synthesis quests; single-use items should use single-task quests.
+
+**Complexity-Utility Matrix:**
+
+| Downstream fan-out | Recommended task count | Quest type |
+|---|---|---|
+| **0-1 recipes** (single-use) | 1 task | Simple fetch/craft |
+| **2-3 recipes** (moderate use) | 1-2 tasks | Standard quest |
+| **4+ recipes** (high demand) | 2-4+ tasks | Synthesis quest |
+
+**Detection:**
+
+```
+# Step 4 (per-node)
+SIMPLE_THRESHOLD = 2  # tasks
+COMPLEX_MIN_FANOUT = 3  # downstream recipes
+
+for each quest Q being generated:
+    task_count = len(Q.tasks)
+    item_id = Q.primary_item  # the main item being crafted/collected
+
+    # Estimate utility frequency from known recipe graph
+    fanout = count_downstream_recipes(item_id)
+
+    if task_count > COMPLEX_THRESHOLD and fanout <= 1:
+        INFO: "Quest '{Q.name}' has {task_count} tasks but its primary
+               item '{item_id}' is used in only {fanout} downstream
+               recipe(s). Consider simplifying to 1 task, as single-use
+               items 'should be craftable in one step' (cesspit.net)."
+
+# Step 5 (statistical)
+MISMATCH_THRESHOLD = 0.20  # 20% of quests
+
+mismatched = [q for q in P.all_quests
+              if q.task_count > 2 and q.primary_fanout <= 1]
+
+if len(mismatched) / len(P.all_quests) > MISMATCH_THRESHOLD:
+    WARNING: "Pack '{P.name}' has {len(mismatched)} quests ({ratio:.0%})
+              with high task complexity (3+) for low-utility items
+              (fanout <= 1). Systematic complexity-utility mismatch
+              suggests over-engineering of simple progression steps."
+```
+
+**Why this matters (author rationale):** cesspit.net's "Get It Right" blog post establishes the clearest design principle found in this research: "everything that's constantly on demand can be as convoluted as you like" versus "everything that has single uses should have be craftable in one step." This directly maps to quest task design — a quest with 4 tasks for an item used once creates unnecessary friction, while a quest with 4 tasks for a core component used in 10+ downstream recipes is justified synthesis.
+
+**Validated against:** ATM-10 (ATM Star chapter: 3.6 tasks/quest for high-fanout items; standard mod chapters: 1.0-1.2 tasks/quest for low-fanout items — Phase 1 data). Path of Truth (14 custom task types for high-complexity progression items).
+
+**Source:** cesspit.net "Get It Right" (node/3014), Phase 1 task-count-per-quest analysis.
+
+---
+
+### R54: Named Reward Table Semantic Match (命名奖励表语义匹配)
+
+**Category:** Reward Continuity / Reward Table Design
+**Severity:** WARNING
+**Phase:** Step 5 (reward audit)
+
+**Rule:** When a pack uses named reward tables (FTB Quests `reward_tables/` directory), table names must semantically match their content pool. A table named "early_tools" should contain early-game tools, not endgame items. The FTB Quests tool does NOT enforce meaningful naming — creators can "随便取个名" (just pick any name) — making this a pack author responsibility.
+
+**Naming Convention Recommendation:**
+
+| Format | Example | Suitable for |
+|---|---|---|
+| `{tier}_{category}` | `lv_circuits`, `ev_materials` | Expert packs with tiered progression |
+| `{source}_{type}` | `nether_loot`, `boss_drops` | Adventure packs with location-based rewards |
+| `{stage}_{purpose}` | `earlygame_starter`, `endgame_capstone` | Any pack with clear stage divisions |
+
+**Detection:**
+
+```
+TIER_KEYWORDS = {
+    "early": ["wood", "stone", "iron", "create"],
+    "mid":   ["steel", "gold", "diamond", "mekanism"],
+    "late":  ["netherite", "nbt", "draconic", "avaritia"],
+    "endgame": ["creative", "atm_star", "ultimate"],
+}
+
+for each reward_table RT in P.reward_tables:
+    table_name = RT.name.lower()
+    table_items = RT.items
+
+    # Estimate intended tier from name
+    intended_tier = match_tier_keywords(table_name)
+
+    # Estimate actual tier from items
+    actual_tiers = [estimate_item_tier(item) for item in table_items]
+    dominant_tier = mode(actual_tiers)
+
+    if intended_tier and dominant_tier and intended_tier != dominant_tier:
+        WARNING: "Reward table '{RT.name}' implies tier '{intended_tier}'
+                  but contains predominantly '{dominant_tier}' items.
+                  Consider renaming to '{dominant_tier}_{category}' or
+                  reviewing the item pool."
+
+    # Check for generic/meaningless names
+    if table_name in ["table1", "table2", "test", "default", "rewards"]:
+        INFO: "Reward table '{RT.name}' uses a generic name. Consider
+               a descriptive name following {tier}_{category} format."
+```
+
+**Why this matters (author rationale):** RAD3 uses 105 named reward tables — the most complex reward architecture in the 54-pack dataset. The FTB Quests tutorial (mcmod.cn/post/1416) confirms that naming is entirely optional and unguided: "随便取个名" (just pick any name). Without naming discipline, loot crate rewards become opaque to players — they can't anticipate what a "Table_47" crate might contain. Semantic naming makes the reward system transparent and helps players make informed decisions about which quests to prioritize.
+
+**Validated against:** RAD3 (105 named tables, naming convention unverified), ATM-9 (reward tables use descriptive names like "refined_storage_base_materials" — positive validation from Gitee mirror).
+
+**Source:** RAD3 config analysis (Phase 1), FTB Quests tutorial (mcmod.cn/post/1416), ATM-9 reward table naming patterns.
+
+---
+
+## Updated Execution Priority Table (with R51-R54)
+
+The new rules fit into the existing priority framework as follows:
+
+### Step 2 additions
+
+| Priority | Rule | Check type | Failure behavior |
+|---|---|---|---|
+| **P2** | R51 Reward Architecture Role Alignment | Role-reward cross-reference | WARNING — reward mismatch |
+
+### Step 4 additions
+
+| Priority | Rule | Check type | Failure behavior |
+|---|---|---|---|
+| **P3** | R53 Task Complexity Utility Proportionality (per-node) | Task count vs estimated utility | INFO — complexity mismatch |
+
+### Step 5 additions
+
+| Priority | Rule | Check type | Failure behavior |
+|---|---|---|---|
+| **P2** | R52 Unlock Leniency Declaration | dependency_requirement statistics | INFO — no declaration found |
+| **P3** | R53 Task Complexity Utility Proportionality (statistical) | Task count vs downstream fan-out | WARNING — systematic mismatch |
+| **P3** | R54 Named Reward Table Semantic Match | Name-content keyword analysis | WARNING — semantic mismatch |
+
+### Updated AP mapping (with R51-R54)
+
+| Anti-pattern | New rule coverage |
+|---|---|
+| AP8 Reward Inflation | **R51** (role alignment prevents over-rewarding in companion packs), **R54** (named tables should match content) |
+| AP14 Random Loot Table Confusion | **R54** (semantic naming makes loot tables predictable) |
+| AP20 Quest Tab Overwhelm | **R52** (unlock leniency declaration forces author to think about freedom vs gating) |
+
+### Updated rule execution priority (full list, R1-R54)
+
+38. **R51** -- Reward Architecture Role Alignment (role-reward consistency, Step 2 P2)
+39. **R52** -- Unlock Leniency Declaration (dependency_requirement transparency, Step 5 P2)
+40. **R53** -- Task Complexity Utility Proportionality (task design, Step 4 P3 / Step 5 P3)
+41. **R54** -- Named Reward Table Semantic Match (reward table naming, Step 5 P3)

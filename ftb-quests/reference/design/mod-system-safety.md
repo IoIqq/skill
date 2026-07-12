@@ -63,6 +63,10 @@
 
 **修复：** (1) 优先用标准 reward 类型；(2) command reward 确保幂等；(3) **禁止** destructive commands；(4) 指定目标维度；(5) 测试 offline + claim-all 场景。
 
+**Cycle 5 Phase 2 新案例：**
+- **GregTech-Odyssey #1568/#1567** — Quest completion firework (command reward) damages the player. The firework explosion is a side effect of the celebration command. Fix suggested: grant 1 second of Resistance V during firework. AP15 variant: celebratory command reward has harmful collateral damage.
+- **GregTech-Odyssey #1397** — Death-triggered quest rewards are delivered to the player at respawn, but if `keepInventory` is off, the reward items appear at the death location and are lost. AP15 variant: command reward timing doesn't account for death/respawn state.
+
 ---
 
 ### AP16 — Quest State Migration（modpack 更新兼容）
