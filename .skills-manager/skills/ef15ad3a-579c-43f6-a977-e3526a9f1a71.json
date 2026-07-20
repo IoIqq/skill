@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "ef15ad3a-579c-43f6-a977-e3526a9f1a71",
+  "path": "project-planner",
+  "path_key": "project-planner",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}

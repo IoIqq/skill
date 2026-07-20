@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "a815f815-ca9d-46bd-b50d-62d1e9fb30c6",
+  "path": "sync-workbuddy-accounts",
+  "path_key": "sync-workbuddy-accounts",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "local",
+    "ref": null,
+    "subpath": null,
+    "branch": null
+  }
+}
