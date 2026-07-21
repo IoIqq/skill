@@ -1196,3 +1196,80 @@ The MC百科 post/2494 tutorial confirms that quest size ("大小") is a recogni
 No player complaints about "nodes too small" (节点太小) or "too dense" (太密) were found specific to the studied packs (Gloomy-Rise, MC-Eternal-Eternally). The MC百科 post/2494 tutorial does warn that "如果你没有好好排版，那么也许玩家会血压升高" (if you don't lay out properly, players may get frustrated), but this is a general layout quality warning, not specific to size compression. The FTBTeam/FTB-Mods-Issues #1909 feature request mentions that pinned quest lists "can get pretty big and that then takes over most of the screen" — an indirect validation that screen space management is a real concern in large quest books, which is precisely the problem MP77 solves through size compression.
 
 The pattern is validated at the mechanism level (size is a known, configurable parameter) and at the problem level (screen space management is a recognized concern). However, the specific technique of using 0.5-0.7 sizing for high-density chapters remains config-only evidence from 4 chapters across 2 packs. No community tutorial recommends sub-1.0 sizing, and no player feedback confirms or denies the navigability of compressed chapters. Authors using MP77 should note that the technique is empirically observed but not community-validated — test with actual players before deploying in production packs.
+
+---
+
+## Cycle 20 Phase 1 — New Micro-Patterns
+
+### MP78 — Quest Links as Cross-Chapter Bridge Nodes [Preliminary — Single-Pack/Expert, Cycle 20]
+
+**Name:** Using FTB Quests `quest_links` to create structural bridges between a backbone highway and parallel mod-content branches
+**Applicable conditions:** Expert packs with a linear progression backbone (voltage tiers, age stages, tech levels) where mod-specific content chapters need to reference backbone progression without duplicating quest nodes. Most relevant for packs with 20+ chapters where the backbone and mod chapters are in separate chapter files.
+**Implementation:**
+- Define the backbone highway as a sequence of chapters (e.g., voltage tiers: LV → MV → HV → ... → UV), each with its own chapter file.
+- In mod-specific chapters (e.g., AE2, Botania), use `quest_links` to reference quests in the backbone chapters. Each quest_link creates a one-way navigation bridge: the player can click through from the mod chapter to the corresponding backbone quest.
+- Use quest_links at tier-gate points: when an AE2 quest requires "HV-tier machine hull," place a quest_link to the HV chapter's machine hull quest. This visually and structurally ties the mod content to the backbone without creating hard dependency edges.
+- Typical density: 8-15 quest_links per mod chapter in a pack with 9-15 backbone tiers. CTNH's AE2 chapter has 13 quest_links to 4 voltage tier chapters (LV, MV, HV, IV).
+- Quest_links should NOT replace hard dependencies — use `dependencies: [...]` for mandatory progression gates and `quest_links` for navigational convenience and context.
+- Pair with `group_icon` on each backbone chapter to create a visual identity (e.g., gtceu:lv_machine_hull for LV chapter) that makes quest_links instantly recognizable when they appear in mod chapters.
+
+**Edge case notes:**
+- **Quest_links vs. dependencies:** A quest_link is navigational only — it does not block quest completion. If the player must complete an HV quest before accessing an AE2 quest, use a hard dependency, not a quest_link. Quest_links are best for "you'll need this tier's machines" soft references.
+- **Bidirectional linking:** FTB Quests does not auto-create reverse links. If AE2 links to HV, the HV chapter does not automatically show a link back to AE2. Add reverse links manually if bidirectional navigation is desired, but be aware that too many reverse links create visual clutter in backbone chapters.
+- **Hex-ID chapter interaction:** When backbone chapters use hex-ID filenames (common in large packs), quest_links must reference the hex-ID, not a human-readable name. Maintain a chapter-name-to-hex-ID mapping during development.
+
+**Sources:** CTNH-Team/Create-New-Horizon AE2 chapter (Case 81, 13 quest_links to 4 voltage tier chapters), CTNH LV chapter (Case 81, 1 quest_link to external power generation guide). The pattern is observed in the most extensive expert GT pack in the dataset (37 chapters, ~1210 quests).
+**Cross-reference:** topology-coordinates.md Case 81; MP73 (Sub-Region Decomposition) for the complementary approach of splitting content within a chapter rather than across chapters.
+
+---
+
+### MP79 — Voltage Highway Topology for Expert GT Packs [Preliminary — Single-Pack, Cycle 20]
+
+**Name:** Structuring expert GregTech packs as a voltage-tier highway with mod-content parallel branches
+**Applicable conditions:** Expert packs built around GregTech CEu (or similar tiered-tech mods) where the natural progression follows discrete technology tiers (LV, MV, HV, EV, IV, LuV, ZPM, UHV, UV). Applicable when the pack has 15+ chapters and 500+ quests.
+**Implementation:**
+- Create one chapter per voltage tier, named after the tier (e.g., "lv.snbt", "mv.snbt", "hv.snbt"). Each tier chapter contains: (a) the tier's machine hull quest as the chapter anchor (size 2.0d, gear or octagon shape), (b) the machine component tree (Motor → Piston/Pump/Conveyor → Robot Arm, octagon shapes), (c) the tier-specific processing chains (chemistry, alloy smelting, circuit crafting), and (d) the transition quest to the next tier (diamond shape, size 2.0d).
+- Arrange tier chapters in a linear sequence: LV → MV → HV → EV → IV → LuV → ZPM → UHV → UV. The player progresses through tiers in strict order, with each tier gating access to the next.
+- Create mod-specific chapters (AE2, Botania, etc.) as parallel branches. Gate access to each mod chapter by the minimum voltage tier required (e.g., AE2 requires MV, Botania requires HV). Use quest_links (MP78) to connect mod chapters back to the voltage backbone.
+- Within each tier chapter, use the following shape semantics: octagon = machine components, gear = major milestone (EBF, assembly line), diamond = key technology unlock, rsquare = info/utility/tutorial, pentagon = tier completion.
+- Size distribution: 2.0d for tier milestones (10-20% of nodes), 1.5d for sub-section anchors (15-25%), 1.0d for standard quests (55-75%). Expert GT packs tend toward MORE enlarged nodes than casual packs (up to 63% non-default in CTNH HV chapter).
+- Quest descriptions should be tutorial-style (multi-paragraph explanations of GT concepts) rather than simple task descriptions. Expert pack players expect educational content in quest descriptions.
+
+**Edge case notes:**
+- **Tier count scaling:** Packs with 5-7 tiers (LV through IV) can keep all tiers as chapters. Packs with 9+ tiers (LV through UV) should consider merging late-game tiers (ZPM, UHV, UV) into fewer chapters if individual tiers have fewer than 15 quests, to avoid excessive chapter count with thin content.
+- **Cross-tier recipes:** Some GT recipes span multiple tiers (e.g., a circuit that requires LV components but is crafted in MV). Place the quest in the tier where the recipe is unlocked, but add quest_links to the lower-tier component quests.
+- **Non-GT mod integration:** When non-GT mods (Create, Botania) are part of an expert GT pack, their chapters should reference the voltage backbone via quest_links but maintain their own internal topology (linear_chain, tree_branching). Do not force non-GT mods into the voltage-tier structure.
+
+**Sources:** CTNH-Team/Create-New-Horizon (Case 81, 9 voltage tiers + 2 named mod chapters + 25 hex-ID chapters). Phoenix-Forge-Technologies (Cycle 15, voltage-tier GT pack with similar structure but fewer tiers). GregTech-Leisure-Server (Cycle 19, non-expert GT pack that also uses voltage-tier chapters but without cross-links).
+**Cross-reference:** topology-coordinates.md Cases 62-63 (GTLS voltage tiers), Case 81 (CTNH full voltage highway); MP78 (Quest Links as Bridge Nodes).
+
+---
+
+### MP80 — Icon Rate Calibration by Pack Type [Preliminary — Multi-Pack, Cycle 20]
+
+**Name:** Targeting icon customization rates based on pack type and chapter content category
+**Applicable conditions:** All packs during Step 2 (outline) when deciding how many quests should have custom `icon` values. The icon rate significantly affects visual identity and player perception of production quality.
+**Implementation:**
+- **Expert packs** (GT, Create expert, age-gated expert): Target 3-10% icon rate. Reserve custom icons for: (a) tutorial/info nodes (player_head or custom guide character), (b) chapter completion rewards (avaritia items, special artifacts), (c) tier-gate markers (machine hull icons). Expert packs compensate for low icon rates with detailed quest descriptions (multi-paragraph tutorials).
+- **Casual/kitchen-sink packs**: Target 20-45% icon rate. Use custom icons for mod-specific items, progression milestones, and visual variety. Kitchen-sink packs benefit from higher icon rates because players browse rather than read — visual scanning is the primary navigation mode.
+- **Exploration/collection chapters**: Target 50-75% icon rate. Exploration content is inherently visual — each biome, structure, or collection target benefits from a custom icon. MCC world_exploration (74%) and Material Factory chapter1 (44%) represent the upper and lower bounds of this range.
+- **RPG/adventure packs**: Target 15-30% icon rate. Boss fights, race selections, and narrative milestones benefit from custom icons, but standard combat/collection quests use default shapes.
+- Apply icons at chapter outline time (Step 2), not during node generation (Step 4). Decide which quests deserve custom icons before generating any quest content, to maintain consistent icon density across the chapter.
+
+**Edge case notes:**
+- **The icon-description tradeoff:** Expert packs with 3-10% icon rates typically have 5-10× longer quest descriptions than casual packs with 40%+ icon rates. This is a deliberate design choice: expert packs prioritize text-based education while casual packs prioritize visual scanning. Do not mix strategies within a single pack — either commit to text-heavy/low-icon or visual-heavy/high-icon.
+- **Custom icon availability:** The achievable icon rate depends on how many distinct items are available in the pack's mod set. Expert GT packs have thousands of GT items but they are visually similar (machine hulls, circuits, components), limiting meaningful icon diversity. Casual packs with diverse mod sets have more visually distinct items to use as icons.
+- **Tutorial character icons:** Using a persistent tutorial character (e.g., CTNH's "Yuriko" with player_head icon) provides a consistent visual anchor across all chapters. This technique works well in expert packs where the tutorial character appears in every chapter at key teaching moments, creating a recognizable brand element.
+
+**Sources:** CTNH (Cases 81, 3-10% icon rate across 4 chapters), Material Factory (Case 74, 44% in tech chapter), MCC world_exploration (Case 77, 74% in exploration chapter), Age of Industry (Case 79, 5% — lowest), Deadlock's End (Case 73, 29%), Vapor Opificium (Case 75, moderate), GATE ModPack (Case 80, low in boss chapters).
+**Cross-reference:** topology-coordinates.md Cases 72-81 (icon rates documented for all 10 new cases); MP73 (Sub-Region Decomposition) for the complementary visual organization technique.
+
+---
+
+## Scope Annotation — Cycle 20 Phase 1 Patterns
+
+| Pattern | Step 2 (outline) | Step 4 (node) | Step 5 (validation) |
+|---------|-------------------|---------------|---------------------|
+| MP78 Quest Links as Bridge Nodes | ✔ (chapter architecture, cross-chapter link plan) | ✔ (quest_link field in SNBT) | ✔ (verify link targets exist, no broken links) |
+| MP79 Voltage Highway Topology | ✔ (tier chapter planning, backbone architecture) | ✔ (per-tier shape/size semantics) | ✔ (verify tier sequence monotonicity, cross-link integrity) |
+| MP80 Icon Rate Calibration | ✔ (icon budget per chapter, pack-type targeting) | ✔ (per-quest icon assignment) | ✔ (check icon rate vs pack-type target range) |

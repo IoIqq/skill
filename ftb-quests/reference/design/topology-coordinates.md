@@ -3747,6 +3747,229 @@ Key calibration observations for the Phase 2 classifier: (1) tree_branching chap
 
 ---
 
+### Cycle 20 Phase 1 — Cases 72–81
+
+### Case 72 — TechnoMagic-4 stage_6 (tech+magic hybrid, highway_branch)
+
+**Pack:** Ivanchela2/TechnoMagic-4
+**Type:** tech+magic hybrid (Create + stages + Twilight Forest, Russian-language)
+**Chapter:** stage_6 — ~50 quests (90275 bytes, largest chapter)
+**Topology:** highway_branch (staged highway with mod-specific sub-regions branching off each stage)
+**Coordinates:** X: estimated [-15.0, 15.0], Y: [-10.0, 10.0], Width: ~30.0, Height: ~20.0 (extensive spread indicating large graph)
+**Shape vocabulary:** hexagon, circle — 2 shape types for milestone differentiation. Hexagon marks mod-specific sub-chain anchors; circle marks stage-transition nodes.
+**Size distribution:** 1.75d (milestone nodes) — moderate size hierarchy.
+**Task types:** item-dominant (alchemistry:combiner, lunar exploration, bigger reactors uranium processing).
+**Rewards:** item+random mixed economy.
+**Dependencies:** multi-branch with parallel sub-chains for different mods.
+**Icon rate:** moderate (custom icons for key tech/magic milestones).
+**Significance:** Good example of staged highway_branch topology in a tech-magic hybrid. The pack organizes its 17 chapters into numbered stages (stage1 through stage_7 plus stage_end), creating a clear linear macro-progression where each stage is itself a highway with branches into individual mod progressions. Stage 6 is the largest chapter (90KB) and represents late-game convergence where chemistry (alchemistry), space travel (lunar), and nuclear tech (bigger reactors) intersect. The hexagon/circle shape pairing differentiates mod-subsystem anchors from stage-transition milestones. Russian-language pack adds linguistic diversity to the dataset.
+
+---
+
+### Case 73 — Deadlock's End create (expert tech, parallel_columns with radial sub-structures)
+
+**Pack:** SRCthird/deadlocks_end
+**Type:** expert tech pack (Create + multiple tech mods)
+**Chapter:** create — 102 quests (86390 bytes)
+**Topology:** parallel_columns with radial sub-structures. Main trunk: Create → Andesite Alloy → branches into Shaft/Casing paths. Left column: power transmission (Cogwheels → Gearshift → Speed Controller). Right column: processing (Press → Sheets → Copper Paradise → Fluid system). Bottom expansion: Brass era (Deployer, Precision Mechanism, Trains). Redstone sub-region: radial layout from central Redstone node. Logistic sub-region: linear chain with side branches.
+**Coordinates:** X: [-9.75, 12.5], Y: [-0.78, 14.0], Width: 22.25, Height: 14.78
+**Shape vocabulary:** pentagon(2), gear(6), hexagon(13), octagon(2), rsquare(3), circle(1), default(majority) — **6 distinct shape types**, the richest shape vocabulary in a parallel_columns chapter in the dataset. Pentagon at size 2.5 marks the chapter start "Create" node. Gear at size 1.625 anchors sub-regions (Andesite Alloy, Shifting Gears, Logistic, Redstone). Hexagon at size 1.25 groups parallel Sheet Metal nodes. Rsquare at size 1.0 marks utility nodes (Speed/Stress monitoring).
+**Size distribution:** 2.5d(1), 1.75d(3), 1.625d(4), 1.5d(1), 1.25d(3), 1.125d(2), 1.0d(majority), 0.875d(2), 0.825d(1), 0.625d(1) — **10 distinct sizes**, the finest size granularity observed in any single chapter. The size continuum from 0.625 to 2.5 creates a clear visual hierarchy with six levels of importance.
+**Task types:** item-dominant with multi-dep convergence nodes (e.g., "Blaze Cake" requires both Blaze Burner and Spout).
+**Rewards:** XP rewards, specific item rewards, random loot table rewards — mixed economy.
+**Dependencies:** mostly single-dependency chains, some multi-dep nodes at processing convergence points.
+**Icon rate:** 29.4% (30/102) — high icon customization for an expert pack chapter.
+**Significance:** The best parallel_columns example in the dataset, demonstrating clear multi-column layout where the left column handles power transmission and the right column handles processing, connected by horizontal cross-links at key transition points (Andesite Alloy, Brass era). The 6 shape types and 10 size values create the richest visual vocabulary observed in any parallel_columns topology — gear-shaped anchor nodes connect columns while hexagon groups parallel items within columns. The 29.4% icon rate is unusually high for an expert pack, suggesting the author invested significant effort in visual customization despite the pack's technical complexity. The radial Redstone sub-region embedded within the parallel columns demonstrates how sub-structures can coexist within a dominant topology.
+
+---
+
+### Case 74 — Material Factory chapter1 (heavy tech, linear_chain with ALL item rewards)
+
+**Pack:** WaiBiBaBo995/Material-Factory
+**Type:** heavy tech pack (AE2, Ars Nouveau, Botania, Industrial Foregoing, Mekanism, Powah, Thermal, Xycraft)
+**Chapter:** chapter1 — ~80 quests (62934 bytes, 247 quest blocks)
+**Topology:** linear_chain with mod-specific branches. Chapter1 serves as a hub connecting to mod-specific chains. Each mod chapter is essentially a linear walkthrough.
+**Coordinates:** X: [-3.0, 20.0], Y: [-6.5, 13.0], Width: 23.0, Height: 19.5
+**Shape vocabulary:** gear(1), octagon(1), heart(1), default(majority) — 3 shape overrides. The heart shape is rare across the entire dataset (only previously observed in Material Factory's own chapter1).
+**Size distribution:** 2.0d(2), 1.5d(1), 1.25d(1), 1.0d(majority) — minimal size hierarchy.
+**Task types:** item-dominant (247 quest blocks).
+**Rewards:** item=137, random=0, choice=0 — **ALL item rewards, zero random tables, zero choice rewards.** This is the most deterministic reward design observed in any pack.
+**Dependencies:** linear chain with side branches into mod-specific content.
+**Icon rate:** **44% (35/80)** — the HIGHEST icon rate in the dataset for a tech-focused chapter.
+**Significance:** Two extreme findings. First, the 44% icon rate is the highest observed in any tech pack chapter, indicating the author customized nearly half of all quest icons — a level of visual investment typically seen only in exploration/collection chapters (MCC world_exploration at 74% is the only higher value, but that chapter is an exploration catalog, not a tech progression chain). Second, the ALL-item reward design (137 item rewards, 0 random, 0 choice) represents the most deterministic reward economy in the dataset — every reward is a specific, known item, creating a completely predictable progression experience. The heart shape override is exceptionally rare and suggests a special "favorite quest" or community reference. The 21-chapter structure with mod-specific linear walkthroughs (AE2, Mekanism, Powah, etc.) makes this pack a textbook example of the "hub + linear mod chains" architecture.
+
+---
+
+### Case 75 — Vapor Opificium 1 (survival/adventure, compact radial, Korean-language)
+
+**Pack:** kerupu526/Vapor-Opificium
+**Type:** survival/adventure with light tech (Korean-language pack)
+**Chapter:** 1.snbt ("The Beginning of a Great Journey") — ~21 quests (25658 bytes)
+**Topology:** radial/hub-spoke (compact). Central "first night" node radiates outward into survival basics (food, tools, shelter, combat).
+**Coordinates:** X: [-7.0, 6.0], Y: [-1.5, 4.0], Width: 13.0, Height: 5.5
+**Shape vocabulary:** hexagon(1), rsquare(multiple) — compact shape set for a compact chapter.
+**Size distribution:** 1.5d for milestone nodes, 1.0d(majority) — minimal hierarchy.
+**Task types:** item-dominant with XP and command rewards.
+**Rewards:** item rewards (food, coins, tools), XP rewards, command rewards (give items, apply effects). Choice loot table rewards also present.
+**Dependencies:** radial from central node.
+**Icon rate:** moderate (custom icons for info/utility nodes).
+**Unique features:** Custom coin system (Technician Coins, Miner Coins, Explorer Coins, Survivor Coins). Hidden quests (dependency_requirement: "one_started"). Command-based rewards.
+**Significance:** The most compact chapter topology in the Cycle 20 batch — 21 quests in a 13×5.5 unit area (density ~0.29 quests/sq-unit). The radial layout from a central "first night" node is a textbook hub-spoke pattern appropriate for a small survival pack's opening chapter. The custom coin system (4 coin types: Technician, Miner, Explorer, Survivor) is an unusual reward economy design that segments the reward space by gameplay activity rather than by progression tier. Korean-language pack adds linguistic diversity. The 4-chapter, ~70-quest total makes this one of the smallest packs in the dataset, useful as a lower-bound reference for chapter count and quest density.
+
+---
+
+### Case 76 — Minecolonies Create and Conquer minecolonies (Create+RPG, grid packing with dense small nodes)
+
+**Pack:** Iskariot53/MinecoloniesCreateandConquer
+**Type:** Create + Minecolonies + RPG combat (Scorched Guns 2)
+**Chapter:** minecolonies — ~90 quests (94847 bytes, 267 quest blocks)
+**Topology:** highway_branch with grid-like internal layout. Wide and tall spread (35.5 × 30.0) creates a large chapter canvas. Many small 0.75d nodes suggest collection/task grid within the highway structure.
+**Coordinates:** X: [-5.5, 30.0], Y: [0.0, 30.0], Width: 35.5, Height: 30.0 — **the TALLEST chapter in the dataset** (30.0 height exceeds Monifactory's 21 units and R59's 35-unit hard clamp is approached).
+**Shape vocabulary:** hexagon(2), diamond(1), default(majority) — minimal shape overrides.
+**Size distribution:** 0.75d(8), 2.5d(1), 1.5d(6), 0.8d(1), 1.0d(majority) — 8 small nodes at 0.75d create a dense sub-grid for collection tasks within the broader highway.
+**Task types:** item-dominant with colony-specific tasks.
+**Rewards:** mixed economy.
+**Dependencies:** grid-like layout with highway branching.
+**Icon rate:** 14% (13/90) — moderate icon customization.
+**Significance:** The 0.75d size on 8 nodes within a 35.5×30.0 area demonstrates the "grid packing" strategy: small nodes at tight spacing create a high-density collection/task sub-grid within a larger highway structure. This is the same strategy observed in MCC's world_exploration chapter but at a smaller scale. The 30.0-unit height approaches R59's 35-unit hard clamp and represents the practical upper limit of comfortable vertical scrolling. The pack's 35 chapters is the largest chapter count in the Cycle 20 batch, demonstrating how a large chapter count correlates with per-chapter specialization (one chapter per mod). The same author (Iskariot53) also created Minecolonies-Cobblemon-Conquest (researched in Cycle 15), providing a basis for author-level design pattern comparison.
+
+---
+
+### Case 77 — Minecolonies Create and Conquer world_exploration_quests (largest exploration chapter, extreme icon rate)
+
+**Pack:** Iskariot53/MinecoloniesCreateandConquer
+**Type:** Create + Minecolonies + RPG combat
+**Chapter:** world_exploration_quests — ~170 quests (166687 bytes, 556 quest blocks)
+**Topology:** massive radial from center. Central hub radiates into biome/region-specific exploration quests.
+**Coordinates:** X: [-9.0, 39.0], Y: [-18.5, 30.0], Width: 48.0, Height: 48.5 — **the LARGEST chapter by area in the dataset** (48×48.5 = 2328 sq-units, exceeding MC-Eternal-Eternally irons_spells at 39×16 = 624 sq-units by a factor of 3.7).
+**Shape vocabulary:** octagon(1), diamond(2), default(majority) — minimal overrides in a very large chapter.
+**Size distribution:** 2.5d(1), 2.0d(2), 1.5d(4), 1.0d(38), 0.75d(1) — 6 size levels with a dominant 1.0d majority.
+**Task types:** exploration/collection-dominant.
+**Rewards:** mixed economy.
+**Dependencies:** radial from center with branching exploration paths.
+**Icon rate:** **74% (126/170)** — the HIGHEST icon rate in the entire dataset. Nearly 3 out of every 4 quests has a custom icon.
+**Significance:** Two records broken. First, the 48×48.5 bounding box (2328 sq-units) is the largest chapter area ever measured, exceeding the previous record holder (MCEE irons_spells at 630 quests in ~624 sq-units) by a factor of 3.7 — despite having fewer quests (170 vs 630). This means the chapter uses generous spacing and radial expansion rather than compression. Second, the 74% icon rate (126 custom icons for 170 quests) is the highest in the dataset, indicating that exploration content receives dramatically more visual customization than tech progression content. The contrast with expert packs (CTNH at 3-10%) is extreme — a factor of 7-25× difference in icon investment per quest. The chapter violates R59's 35-unit soft warning on both axes (48 and 48.5), suggesting that exploration content is expected to sprawl and that viewport scrolling is an acceptable trade-off for spatial organization.
+
+---
+
+### Case 78 — Thrash Create Colony create (Create-focused, linear_chain)
+
+**Pack:** cryptiklemur/thrash-create-colony
+**Type:** Create + addons (focused Create pack)
+**Chapter:** create — ~40 quests (66209 bytes)
+**Topology:** linear_chain with parallel mod-addon branches. Main Create chapter progresses through Create tiers (Andesite → Brass → Railway). Addon chapters (New Age, Vintage Improvements, Connected, etc.) are independent parallel branches.
+**Coordinates:** estimated X: [-5.0, 15.0], Y: [-5.0, 10.0], Width: ~20.0, Height: ~15.0
+**Shape vocabulary:** square, gear, rsquare — gear shape marks Andesite Alloy anchor node (1.5d), square marks welcome node (1.5d).
+**Size distribution:** 1.5d for milestone nodes (Welcome, Andesite Alloy, Train Assembly, Redstone Logic), 1.0d(majority).
+**Task types:** item-dominant (standard Create tech tree).
+**Rewards:** item economy.
+**Dependencies:** linear chain with side branches.
+**Icon rate:** moderate (gear shape with railway casing icon for Train Assembly milestone).
+**Significance:** Clean example of linear_chain in a Create-focused pack. The 20-chapter structure decomposes Create's ecosystem into focused addon chapters (New Age, Vintage Improvements, Taste of Tradition, Space, Connected, Central Kitchen, Enchantment Industry), each as an independent parallel branch accessible from the main Create progression. This "linear main + parallel addons" architecture is the standard pattern for Create-focused packs (also observed in Thrash Create Colony's peer packs). The gear shape for Andesite Alloy confirms the cross-pack shape semantic: gear = production/processing milestone.
+
+---
+
+### Case 79 — Age of Industry Refactored age_1_hello_world (IE+Botania, all-square linear_chain)
+
+**Pack:** LilJagty/Age-Of-Industry-Refactored
+**Type:** Immersive Engineering + Botania tech/magic (age-based progression)
+**Chapter:** age_1_hello_world — ~20 quests (12182 bytes, 63 quest blocks)
+**Topology:** linear_chain with strict vertical progression. Y increases with tech tier, creating a deterministic upward flow.
+**Coordinates:** X: [-5.0, 5.0], Y: [-4.5, 4.5], Width: 10.0, Height: 9.0 — compact, nearly square bounding box.
+**Shape vocabulary:** circle(1), square(17) — **HEAVY square dominance** (17 out of 18 shape overrides are square). This is the most uniform shape distribution in the dataset.
+**Size distribution:** 1.5d(2), 1.0d(majority) — minimal size hierarchy.
+**Task types:** item-dominant (60 item tasks).
+**Rewards:** item=60, random=0 — ALL deterministic item rewards, zero random tables.
+**Dependencies:** linear chain with some convergence points.
+**Icon rate:** **5% (1/20)** — the LOWEST icon rate in the Cycle 20 batch.
+**Optional:** side branches for optional quests.
+**Significance:** The all-square shape distribution is unique in the dataset — no other pack uses a single shape for 94% of overrides. This reflects a minimalist design philosophy where shape differentiation is deliberately suppressed in favor of age-based gating as the primary organizational signal. The 5% icon rate (1 icon in 20 quests) is the lowest observed and pairs with the all-square shapes to create the most visually uniform chapter in the dataset. The strict Y-axis progression (vertical linear_chain) combined with age-based gating creates the most rigid linear topology: the player has exactly one path through the chapter, with optional side branches clearly marked. The deterministic reward design (60 item rewards, 0 random) matches Material Factory's ALL-item approach, suggesting that age-gated packs tend toward deterministic reward economies.
+
+---
+
+### Case 80 — GATE ModPack chapter_ii (RPG/adventure, race-based highway_branch)
+
+**Pack:** RpalZ/GATEModPack
+**Type:** RPG/adventure (race-based progression, boss fights)
+**Chapter:** chapter_ii — ~13 main quest nodes with boss fights (51815 bytes)
+**Topology:** linear_chain at macro scale (chapters I → II → III) with highway_branch at micro scale (race chapters as parallel branches). Race chapters (Enderian, Dragonborne, Elves, Stormkin, Vampire, Merfolk, Yeti, Orcs) form 8 parallel branches each 8-10KB in size.
+**Coordinates:** X: [0.375, 51.0], Y: [-8.625, 19.5], Width: 50.625, Height: 28.125 — **the WIDEST chapter in the dataset** (50.625 units exceeds GATE's own chapter_i at 32.5 and all prior observations).
+**Shape vocabulary:** hexagon(1) at 3.0 size for major boss milestone. Octagon at 2.5d for sub-milestone.
+**Size distribution:** 1.5d(most), 2.5d(octagon milestone), 3.0d(hexagon boss) — boss fights use the LARGEST size in the dataset (3.0d).
+**Task types:** boss fight + eye collection quests + portal unlocking.
+**Rewards:** XP (5000-10000 per quest), loot tables, stage unlocks — high-XP boss economy.
+**Dependencies:** linear narrative chain with stage-gating.
+**Icon rate:** low (chapter_ii has minimal icon overrides despite large size).
+**Narrative integration:** Heavy story text with each quest (lore about the "Warden" and corruption). Each quest node contains multi-paragraph narrative.
+**Significance:** Three records and one unique pattern. First, the 50.625-unit width is the widest chapter span ever measured, exceeding the previous record by a factor of ~1.7 (FTB Evolution create at 30 units). The extreme horizontal spread is driven by boss fight arenas that require spatial separation. Second, the 3.0d size for boss hexagon milestones is the largest quest size in the dataset (tied with GATE's own chapter_i boss node). Third, the 8 race-based parallel branches represent a unique highway_branch variant where the branches are character-creation choices (race selection) rather than mod-based content splits. This "race-based branching" pattern means the player experiences only one branch per playthrough, unlike mod-based highway_branch where the player typically pursues all branches. The heavy narrative integration (multi-paragraph lore per quest) makes GATE ModPack the most text-heavy pack in the dataset by quest-description density.
+
+---
+
+### Case 81 — Create New Horizon (CTNH) LV + AE2 (expert GT+Create, voltage highway with cross-links)
+
+**Pack:** CTNH-Team/Create-New-Horizon (dev branch, Chinese-language)
+**Type:** expert Create + GregTech CEu hybrid
+**Chapters sampled:** LV ("&7LV period" / "Industrial Start", 30397 bytes, ~45 quests) and AE2 (52931 bytes, ~85 quests). Full pack: 37 chapters, ~1210 quests.
+**Topology (macro):** **voltage-tier highway with cross-links** — a topology unique to expert GT packs. Nine voltage tiers form the main highway (LV → MV → HV → EV → IV → LuV → ZPM → UHV → UV). AE2 and Botania are parallel branches accessible from multiple voltage tiers. 25 hex-ID chapters provide mod-specific content. Cross-chapter quest links (13 in AE2 alone) create a web of interconnections, producing a "ladder with rungs" topology.
+**Topology (micro, LV):** tree-branching from central "Machine Hull" node. Left branch: utility machines (electrolyzer, alloy smelter, furnace). Center branch: motor → components → machines. Right branch: chemistry (mixer → gallium arsenide → diode → circuits). Far right: EBF milestone → aluminum processing → MV transition.
+**Topology (micro, AE2):** linear main path with parallel sub-regions. Main path: certus quartz → processors → controller → storage → crafting. Bottom sub-region: AE2CS crystal seeds (Y: -7 to -10). Right sub-region: OMNI cells and complex cells (X: 13-29).
+**Coordinates (LV):** X: [-7.0, 14.5], Y: [-9.0, 5.5], Width: 21.5, Height: 14.5
+**Coordinates (AE2):** X: [-8.5, 29.0], Y: [-10.0, 5.5], Width: 37.5, Height: 15.5
+**Coordinates (HV):** X: [-28.5, -6.0], Y: [7.0, 40.0], Width: 22.5, Height: 33.0 — all negative X, all positive Y (unusual quadrant positioning)
+**Shape vocabulary (LV):** diamond(2), gear(1), rsquare(2), octagon(8) — octagon-dominant for machine components.
+**Shape vocabulary (AE2):** pentagon(1) — minimal overrides in a large chapter; shape differentiation relies on the voltage tier chapters.
+**Shape vocabulary (HV):** pentagon(1), rsquare(3), gear(1), octagon(1) — consistent with LV shape semantics.
+**Shape vocabulary (IV):** rsquare(3), gear(1), pentagon(1) — same shape set as HV.
+**Cross-chapter shape semantics:** octagon = machine components (consistent across all voltage tiers), gear = major milestone, diamond = key tech unlock, rsquare = info/utility, pentagon = completion/summary.
+**Size distribution (LV):** 2.0d(7), 1.5d(3), 1.0d(2) — many enlarged nodes (58% non-default).
+**Size distribution (AE2):** 2.0d(4), 1.5d(6), 1.0d(15) — 40% non-default.
+**Size distribution (HV):** 2.0d(11), 1.5d(6), 1.0d(10) — 63% non-default (highest enlargement rate).
+**Size semantics:** 2.0d = chapter milestones (10-20% of nodes in most chapters, up to 40% in HV), 1.5d = sub-section anchors, 1.0d = standard quests.
+**Task types (LV):** item-dominant with machine component tree (Motor → Piston/Pump/Conveyor → Robot Arm in octagon shape).
+**Rewards (LV):** random(18), item(5), choice(1) — mixed economy with random-dominant.
+**Rewards (HV):** random=20, item=189, choice=3 — item-dominant at higher tiers.
+**Dependencies (LV):** max 3 deps per quest, tree-branching from machine hull.
+**Icon rate (LV):** 7% (3/45) — low. Icons: gtceu:phenolic_printed_circuit_board, ctnhcore:industrial_primitive_blast_furnace, minecraft:player_head (Yuriko tutorial character).
+**Icon rate (AE2):** 5% (4/85) — very low. Icons: avaritia:infinity_catalyst, gtceu:hv_machine_hull, minecraft:player_head (Yuriko), ae2:controller.
+**Icon rate (HV):** 3% (2/65) — the lowest measured in this batch.
+**Icon rate (IV):** 10% (5/50) — highest among CTNH chapters but still low by non-expert standards.
+**Quest links (cross-chapter):** AE2 has 13 quest links to voltage tier chapters (LV, MV, HV, IV), creating inter-chapter dependency bridges. LV has 1 link to an external power generation guide. Quest links serve as "bridge nodes" connecting the voltage highway to mod-specific content branches.
+**Tutorial system:** Tutorial character "Yuriko" (player_head with custom skin) appears across chapters as a persistent guide. Quest descriptions are detailed Chinese tutorials (multi-paragraph explanations of GregTech voltage concepts, dual-voltage system, machine component trees).
+**Completion reward scaling:** LV completion: small items. AE2 completion: neutronium dust(64) + wetware processor mainframe(64) + complex omni cells(32) + UV machine hulls(32) — dramatic exponential scaling.
+**Significance:** CTNH is the most important pack in the Cycle 20 batch for five reasons. First, the voltage-tier highway with cross-chapter quest links represents a topology unique to expert GT packs — not observed in any non-expert pack across 19 prior cycles. The 9 voltage tiers form a strict linear highway, but mod chapters are accessible as parallel branches from multiple tiers, creating a "ladder with rungs" topology that has no precedent in the dataset. Second, the 13 quest links in the AE2 chapter demonstrate "bridge nodes" — cross-chapter connections that tie mod content back to the voltage highway, ensuring the player cannot pursue AE2 independently of voltage progression. Third, the icon rate inversion is confirmed: expert pack chapters (3-10%) have dramatically lower icon rates than casual pack chapters (20-74%), a factor of 3-25× difference. Expert packs compensate with detailed text descriptions rather than visual icons. Fourth, the sub-region decomposition within large chapters (AE2's main path + crystal seeds + OMNI cells, three distinct spatial regions) provides a template for organizing 85+ quests within a single chapter without exceeding viewport limits. Fifth, the Yuriko tutorial character (player_head icon) establishes a cross-chapter narrative device that persists across all 37 chapters, the most extensive tutorial character system in the dataset. The pack's 37 chapters and ~1210 quests make it one of the largest expert packs researched, and the Chinese-language detailed quest descriptions provide rich evidence for expert pack design philosophy.
+
+---
+
+### Cycle 20 Phase 1 Spacing Additions
+
+| Quests | Pack | Min spacing | Avg spacing | Max spacing |
+|--------|------|-------------|-------------|-------------|
+| ~50 | TechnoMagic-4/stage_6 | ~1.0 | ~2.0 | ~20.0 |
+| 102 | DeadlocksEnd/create | ~0.8 | ~1.5 | ~15.0 |
+| ~80 | MaterialFactory/chapter1 | ~1.0 | ~2.0 | ~20.0 |
+| ~21 | VaporOpificium/1 | ~1.0 | ~2.0 | ~10.0 |
+| ~90 | MCC/minecolonies | ~0.75 | ~2.0 | ~30.0 |
+| ~170 | MCC/world_exploration | ~1.0 | ~3.0 | ~35.0 |
+| ~40 | ThrashCC/create | ~1.0 | ~2.0 | ~15.0 |
+| ~20 | AgeOfIndustry/age_1 | ~1.0 | ~2.0 | ~8.0 |
+| ~13 | GATE/chapter_ii | ~2.0 | ~5.0 | ~40.0 |
+| ~45 | CTNH/lv | ~1.0 | ~2.0 | ~18.0 |
+| ~85 | CTNH/ae2 | ~1.0 | ~2.5 | ~30.0 |
+
+### Cycle 20 Phase 1 — Accessed Packs
+
+- Ivanchela2/TechnoMagic-4 (branch: main) — Cycle 20
+- SRCthird/deadlocks_end (branch: main) — Cycle 20
+- WaiBiBaBo995/Material-Factory (branch: main) — Cycle 20
+- kerupu526/Vapor-Opificium (branch: main) — Cycle 20
+- Iskariot53/MinecoloniesCreateandConquer (branch: main) — Cycle 20
+- cryptiklemur/thrash-create-colony (branch: main) — Cycle 20
+- LilJagty/Age-Of-Industry-Refactored (branch: main) — Cycle 20
+- RpalZ/GATEModPack (branch: main) — Cycle 20
+- CTNH-Team/Create-New-Horizon (branch: dev) — Cycle 20
+
+---
+
 ### Cycle 19 Phase 1 Spacing Additions
 
 | Quests | Pack | Min spacing | Avg spacing | Max spacing |
